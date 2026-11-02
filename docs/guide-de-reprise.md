@@ -24,7 +24,7 @@ Il complète le [README](../README.md), qui présente le projet, et la [roadmap]
 | Phases 1 à 11 (57 stories sur 58) | Livrées |
 | Phase 12, US-58 (documentation) | En cours : il manque les captures d'écran |
 | Dépôt | Public : https://github.com/BOUSSOUF-Hajar/smart-recruit |
-| CI (GitHub Actions) | Verte sur la branche `feat/us-58-documentation` le 2 novembre 2026 (6 jobs) ; le passage vert sur `main` après fusion marque le jalon J4 |
+| CI (GitHub Actions) | Entièrement verte sur `main` le 3 novembre 2026 (6 jobs) : **jalon J4 atteint** |
 | Backend sur le poste | `./mvnw verify` et SpotBugs verts le 3 novembre 2026 (325 tests unitaires, 225 d'intégration) |
 | Frontend sur le poste | Pas encore vérifié : `frontend/node_modules` n'est pas installé |
 | Pile Docker complète sur le poste | Pas encore lancée : images trop lourdes pour la connexion actuelle ; la CI la lance à chaque push |
@@ -162,15 +162,9 @@ Règles du code à ne pas casser :
 
 ## 6. Ce qui reste à faire, pas à pas
 
-### 6.1 Noter le jalon J4
+### 6.1 Relire et clore les stories
 
-Quand la CI de `main` est entièrement verte :
-
-1. Branche `docs/jalon-j4`.
-2. `docs/roadmap.md` : dans le tableau des jalons (§7) et le bilan de la phase 11, noter J4 atteint, avec la date et le lien de l'exécution verte.
-3. README, rubrique « État du projet » : retirer le point sur la pipeline.
-4. `CLAUDE.md` §7 : retirer le point J4.
-5. Commit `docs: jalon J4 atteint (CI verte sur main)`, pull request, fusion.
+Le jalon J4 est atteint (CI verte sur `main` le 3 novembre 2026, noté dans la roadmap). Les stories US-01 à US-57 sont encore « En revue » dans `docs/user-stories.md` : les relire, puis passer leur statut à « Terminé ». Les notes de `docs/stories/` donnent, pour chacune, les critères et leur preuve.
 
 ### 6.2 Captures d'écran (fin d'US-58)
 

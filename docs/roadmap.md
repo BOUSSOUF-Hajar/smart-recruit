@@ -292,6 +292,8 @@ Les trois dernières phases rendent la plateforme administrable, la font tourner
 
 **Bilan (en revue)** : critères verts dans la mesure de ce que l'environnement de développement permet. Fait et vérifié : données de démonstration cohérentes (test dédié, démarrages réels), Dockerfiles (hadolint), `docker-compose.yml` (`docker compose config`), image backend simulée depuis ses couches en profil `prod,demo`, vraie configuration Nginx devant le backend, 4 tests Playwright verts à travers elle, couverture 94,9 % sur les services avec un seuil qui fait échouer le build, SpotBugs sans constat, `npm audit` propre, pipeline validée par `actionlint`. **Non vérifiable ici** : la construction réelle des images et l'exécution sur GitHub, car les registres d'images sont bloqués et il n'y a pas de dépôt distant. Le jalon J4 sera atteint au premier passage vert de la pipeline sur `main`.
 
+**Jalon J4 atteint le 3 novembre 2026** : pipeline entièrement verte sur `main` (commit `a99c194`, [exécution 41543599206](https://github.com/BOUSSOUF-Hajar/smart-recruit/actions/runs/41543599206)). Les six jobs passent : backend, frontend, analyse du dépôt, Playwright sur la pile `docker compose`, construction, analyse et publication des deux images. Il a fallu deux corrections après le premier passage : mise à jour des paquets Alpine et Spring Boot 4.1.2 ([US-54](stories/US-54.md) §4).
+
 ### Phase 12 — Documentation et portfolio · 3 points
 
 **Objectif** : qu'un recruteur technique comprenne le projet en cinq minutes et le lance en dix.
@@ -314,7 +316,8 @@ Les trois dernières phases rendent la plateforme administrable, la font tourner
 
 - Faits : README restructuré selon les rubriques d'US-58 ; 12 fiches ADR ([docs/adr/](adr/README.md)) ; [préparation à l'entretien](preparation-entretien.md) ; 7 diagrammes perdus redessinés en Mermaid. La relecture de `docs/` contre le code a aussi révélé l'absence de springdoc, désormais ajouté.
 - Vérifié par la CI (2 novembre 2026, premier push sur GitHub) : springdoc, tests, build et Playwright sur la pile `docker compose`.
-- À faire : captures d'écran ; pipeline entièrement verte sur `main`, après la fusion de la branche qui corrige les vulnérabilités trouvées par l'analyse des images ([US-54](stories/US-54.md) §4).
+- Pipeline entièrement verte sur `main` le 3 novembre 2026, après la fusion de la branche qui corrige les vulnérabilités trouvées par l'analyse des images ([US-54](stories/US-54.md) §4) : jalon J4.
+- À faire : captures d'écran ; relecture finale du dépôt (jalon J5).
 
 Sur le poste de développement, le backend est désormais vérifié aussi en local (3 novembre 2026 : `./mvnw verify` et SpotBugs verts, JDK 25 installé) ; le frontend et la pile Docker complète restent vérifiés par la CI seule, la connexion (moins de 20 Ko/s) ne permettant pas de télécharger les images et `node_modules` ([US-58](stories/US-58.md) §5).
 
@@ -327,7 +330,7 @@ Cinq jalons, chacun démontrable à quelqu'un d'autre : c'est à eux que tu peux
 | J1 | 3 | 41 | 18 % | ≈ 120 h | Inscription, connexion, espaces séparés par rôle, CI verte |
 | J2 | 6 | 134 | 60 % | ≈ 400 h | Un candidat postule, un recruteur fait avancer la candidature, historique complet |
 | J3 | 9 | 183 | 82 % | ≈ 550 h | MVP du prompt : workflow complet, entretiens, IA, tableaux de bord |
-| J4 | 11 | 220 | 99 % | ≈ 660 h | Application complète lancée en une commande, pipeline CI/CD complète |
+| J4 | 11 | 220 | 99 % | ≈ 660 h | Application complète lancée en une commande, pipeline CI/CD complète. **Atteint le 3 novembre 2026** |
 | J5 | 12 | 223 | 100 % | ≈ 670 h | Dépôt public documenté, prêt à être présenté |
 
 J2 est le jalon le plus important pour ta recherche d'emploi : à 60 % du travail, tu as déjà un ATS fonctionnel à montrer et à expliquer. Si le temps presse, c'est à partir de lui que le projet peut être présenté, en indiquant clairement ce qui est en cours.
