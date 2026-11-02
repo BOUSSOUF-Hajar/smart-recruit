@@ -1,0 +1,18 @@
+Nadia El Alaoui
+Data analyst
+
+Contact : nadia.elalaoui@exemple.com - 0522 98 76 54
+12 avenue Hassan II, 20000 Casablanca
+Âge : 29 ans - Nationalité : marocaine
+
+Expériences
+2022 - 2025 Data analyst, Banque Populaire du Centre
+Tableaux de bord Power BI, requêtes SQL sur PostgreSQL, automatisation en Python (pandas).
+2020 - 2022 Chargée d'études, Institut Sondage Plus
+Analyses statistiques avec R et Excel.
+
+Formation
+2020 Master Statistique et data science, INSEA
+
+Compétences : Python, SQL, PostgreSQL, Power BI, R, Excel
+Langues : français (C2), anglais (B2), arabe (langue maternelle)

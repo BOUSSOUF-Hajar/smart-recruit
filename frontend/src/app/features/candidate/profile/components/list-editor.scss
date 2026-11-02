@@ -1,0 +1,59 @@
+// Mise en forme commune des éditeurs de listes : compétences, langues, liens
+h2 {
+  margin: 0 0 8px;
+  font: var(--mat-sys-title-large);
+}
+
+.rows {
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.name {
+  flex: 1 1 160px;
+  font: var(--mat-sys-body-large);
+}
+
+.level {
+  width: 180px;
+}
+
+.years {
+  width: 100px;
+}
+
+.grow {
+  flex: 1 1 240px;
+}
+
+.row-error {
+  flex-basis: 100%;
+  margin: 0 0 8px;
+  color: var(--mat-sys-error);
+  font: var(--mat-sys-body-small);
+}
+
+.hint {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+mat-form-field {
+  margin-bottom: -8px;
+}

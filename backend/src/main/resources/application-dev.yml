@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    # Valeurs de développement alignées sur docker-compose.dev.yml (pas des secrets)
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/smartrecruit}
+    username: ${DB_USERNAME:smartrecruit}
+    password: ${DB_PASSWORD:smartrecruit}
+
+smartrecruit:
+  storage:
+    # Dossier des CV en développement, relatif au dossier de lancement (ignoré par Git)
+    root-directory: ${STORAGE_ROOT:./data/resumes}
+  app:
+    public-url: http://localhost:4200
+  security:
+    jwt:
+      # Clé de développement uniquement (64 caractères) ; en prod, JWT_SECRET est obligatoire
+      secret: ${JWT_SECRET:dev-only-secret-change-me-0123456789abcdefghijklmnopqrstuvwxyz}
+  ai:
+    enabled: ${AI_ENABLED:true}           # Ollama du docker-compose.dev.yml ; arrêté, l'application reste utilisable
+  bootstrap:
+    admin:
+      # Admin initial créé au premier démarrage si aucun admin n'existe (US-07)
+      email: ${INITIAL_ADMIN_EMAIL:admin@smartrecruit.local}
+      password: ${INITIAL_ADMIN_PASSWORD:admin-temporaire-2026}
+
+# US-58 : documentation OpenAPI sur http://localhost:8080/api/docs/swagger-ui.html
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    com.smartrecruit: DEBUG
+    org.flywaydb: INFO      # affiche les migrations appliquées au démarrage

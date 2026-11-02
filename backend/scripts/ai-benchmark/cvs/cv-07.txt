@@ -1,0 +1,17 @@
+Hajar Berrada
+Ingénieure QA
+
+hajar.berrada@exemple.ma | 0661-55-44-33
+Born on 21/09/1995
+
+Experience
+2021 - 2025 QA engineer, FinTech Maroc
+Automated tests with Selenium and Cypress, API testing with Postman, defect tracking in Jira.
+2019 - 2021 Software tester, IT Services Agadir
+Manual testing and test plans.
+
+Education
+2019 Engineering degree, ENSA Agadir
+
+Skills: Selenium, Cypress, Postman, Jira, Java, SQL
+Languages: French (C1), English (B2)

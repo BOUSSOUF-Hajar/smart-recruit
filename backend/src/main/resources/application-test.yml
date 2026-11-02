@@ -1,0 +1,11 @@
+smartrecruit:
+  ai:
+    enabled: true
+    provider: fake               # FakeAIService (sources de test) : réponses fixes, aucun modèle
+  storage:
+    root-directory: ${java.io.tmpdir}/smartrecruit-test/resumes
+  app:
+    public-url: http://localhost
+  security:
+    jwt:
+      secret: test-only-secret-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGH

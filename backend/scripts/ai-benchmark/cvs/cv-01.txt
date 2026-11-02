@@ -1,0 +1,23 @@
+Salma Idrissi
+Développeuse backend Java
+Email : salma.idrissi@exemple.ma | Tél : +212 6 12 34 56 78
+Adresse : 24, rue Ibn Battouta, Rabat
+Née le 14/03/1996 - Situation familiale : célibataire
+LinkedIn : linkedin.com/in/salma-idrissi-dev
+
+EXPÉRIENCE
+2021 - 2025 Développeuse Java, Atlas Digital (Casablanca)
+- Conception d'API REST avec Spring Boot pour une plateforme de paiement
+- Modélisation et optimisation de bases PostgreSQL
+- Revue de code et workflow Git (GitLab)
+2019 - 2021 Développeuse junior, Maghreb Soft (Rabat)
+- Maintenance d'applications Java EE et scripts Python
+
+FORMATION
+2019 Diplôme d'ingénieur d'État en génie logiciel, ENSIAS
+
+COMPÉTENCES
+Java, Spring Boot, PostgreSQL, Git, Docker, Python
+
+LANGUES
+Arabe : langue maternelle - Français : courant (C1) - Anglais : B2

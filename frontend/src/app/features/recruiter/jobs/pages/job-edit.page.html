@@ -1,0 +1,261 @@
+<a mat-button routerLink="/recruiter/jobs" class="back">
+  <mat-icon>arrow_back</mat-icon>
+  <span i18n>Offres de l'entreprise</span>
+</a>
+
+@if (loadError()) {
+  <p role="alert" i18n>Cette offre est introuvable.</p>
+} @else {
+  <div class="header">
+    <h1>
+      @if (job(); as job) {
+        {{ job.title }}
+      } @else {
+        <ng-container i18n>Nouvelle offre</ng-container>
+      }
+    </h1>
+    @if (job(); as job) {
+      <app-job-status [status]="job.status" [expired]="job.expired" />
+    }
+  </div>
+
+  @if (job(); as job) {
+    <p class="meta">
+      <ng-container i18n>Créée par {{ job.createdBy.name }}</ng-container>
+      @if (job.publishedAt) {
+        · <ng-container i18n>publiée le {{ job.publishedAt | date: 'd MMM y' }}</ng-container>
+      }
+      @if (job.expiresAt) {
+        · <ng-container i18n>expire le {{ job.expiresAt | date: 'd MMM y' }}</ng-container>
+      }
+      · <ng-container i18n>{{ applications() }} candidature(s)</ng-container>
+    </p>
+    @if (actions().length) {
+      <div class="lifecycle">
+        @for (action of actions(); track action) {
+          @if (action === 'publish' || action === 'reopen') {
+            <button mat-flat-button type="button" (click)="run(action)">
+              {{ actionLabel(action) }}
+            </button>
+          } @else {
+            <button mat-stroked-button type="button" (click)="run(action)">
+              {{ actionLabel(action) }}
+            </button>
+          }
+        }
+      </div>
+    }
+  }
+
+  @if (publicationReasons().length) {
+    <div class="banner banner--error" role="alert">
+      <strong i18n>L'offre ne peut pas être publiée :</strong>
+      <ul>
+        @for (reason of publicationReasons(); track reason) {
+          <li>{{ reason }}</li>
+        }
+      </ul>
+    </div>
+  }
+  @if (conflict()) {
+    <div class="banner" role="alert">
+      <span i18n>Cette offre a été modifiée entre-temps.</span>
+      <button mat-button type="button" (click)="reload()" i18n>Recharger</button>
+    </div>
+  }
+  @if (!editable()) {
+    <p class="banner" i18n>Offre clôturée ou archivée : elle n'est plus modifiable.</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <section class="grid">
+      <mat-form-field class="wide">
+        <mat-label i18n>Intitulé</mat-label>
+        <input matInput formControlName="title" required />
+        <mat-error>{{ error('title') }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Catégorie</mat-label>
+        <mat-select formControlName="categoryId" required>
+          @for (category of categories.value() ?? []; track category.id) {
+            <mat-option [value]="category.id">{{ category.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>{{ error('categoryId') }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Contrat</mat-label>
+        <mat-select formControlName="contractType">
+          @for (option of contractTypes; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <div formGroupName="location" class="pair">
+        <mat-form-field>
+          <mat-label i18n>Ville</mat-label>
+          <input matInput formControlName="city" required />
+          <mat-error>{{ error('location.city') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="short">
+          <mat-label i18n>Pays</mat-label>
+          <input matInput formControlName="countryCode" maxlength="2" required />
+          <mat-error>{{ error('location.countryCode') }}</mat-error>
+        </mat-form-field>
+      </div>
+      <mat-form-field>
+        <mat-label i18n>Mode de travail</mat-label>
+        <mat-select formControlName="workMode">
+          @for (option of workModes; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Niveau</mat-label>
+        <mat-select formControlName="experienceLevel">
+          @for (option of levels; track option.value) {
+            <mat-option [value]="option.value">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Années d'expérience minimum</mat-label>
+        <input matInput formControlName="minYearsExperience" type="number" min="0" max="30" />
+        <mat-error>{{ error('minYearsExperience') }}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="wide">
+        <mat-label i18n>Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="8"
+          maxlength="10000"
+          required
+        ></textarea>
+        <mat-hint i18n>50 caractères minimum</mat-hint>
+        <mat-error>{{ error('description') }}</mat-error>
+      </mat-form-field>
+    </section>
+
+    <section formGroupName="salary">
+      <h2 i18n>Salaire (facultatif)</h2>
+      <div class="grid">
+        <mat-form-field>
+          <mat-label i18n>Minimum</mat-label>
+          <input matInput formControlName="min" type="number" min="0" />
+          <mat-error>{{ error('salary.min') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Maximum</mat-label>
+          <input matInput formControlName="max" type="number" min="0" />
+          <mat-error>{{ error('salary.max') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="short">
+          <mat-label i18n>Devise</mat-label>
+          <input matInput formControlName="currency" maxlength="3" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Période</mat-label>
+          <mat-select formControlName="period">
+            @for (option of periods; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-checkbox formControlName="visible" i18n
+        >Afficher le salaire sur l'offre publique</mat-checkbox
+      >
+    </section>
+
+    <section>
+      <h2 i18n>Compétences requises</h2>
+      <p class="hint" i18n>
+        Au moins une pour publier. Une compétence ne figure que dans une seule liste.
+      </p>
+      <ul formArrayName="requiredSkills" class="rows">
+        @for (row of requiredSkills.controls; track row.controls.skillId.value; let i = $index) {
+          <li [formGroupName]="i" class="row">
+            <span class="name">{{ row.controls.name.value }}</span>
+            <mat-form-field class="level">
+              <mat-label i18n>Niveau minimum</mat-label>
+              <mat-select formControlName="minLevel">
+                @for (level of skillLevels; track level.value) {
+                  <mat-option [value]="level.value">{{ level.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            @if (editable()) {
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removeRequired(i)"
+                aria-label="Retirer"
+                i18n-aria-label
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+            @if (rowError(row); as message) {
+              <p class="row-error" role="alert">{{ message }}</p>
+            }
+          </li>
+        }
+      </ul>
+      @if (editable()) {
+        <app-skill-autocomplete
+          label="Ajouter une compétence requise"
+          i18n-label
+          [excludedIds]="selectedSkillIds()"
+          (selected)="addRequired($event)"
+        />
+      }
+    </section>
+
+    <section>
+      <h2 i18n>Compétences appréciées</h2>
+      <ul formArrayName="preferredSkills" class="rows">
+        @for (row of preferredSkills.controls; track row.controls.skillId.value; let i = $index) {
+          <li [formGroupName]="i" class="row">
+            <span class="name">{{ row.controls.name.value }}</span>
+            @if (editable()) {
+              <button
+                mat-icon-button
+                type="button"
+                (click)="removePreferred(i)"
+                aria-label="Retirer"
+                i18n-aria-label
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+            @if (rowError(row); as message) {
+              <p class="row-error" role="alert">{{ message }}</p>
+            }
+          </li>
+        }
+      </ul>
+      @if (editable()) {
+        <app-skill-autocomplete
+          label="Ajouter une compétence appréciée"
+          i18n-label
+          [excludedIds]="selectedSkillIds()"
+          (selected)="addPreferred($event)"
+        />
+      }
+    </section>
+
+    @if (editable()) {
+      <div class="actions">
+        <button mat-flat-button type="submit" [disabled]="saving()">
+          @if (job()) {
+            <ng-container i18n>Enregistrer les modifications</ng-container>
+          } @else {
+            <ng-container i18n>Créer le brouillon</ng-container>
+          }
+        </button>
+      </div>
+    }
+  </form>
+}

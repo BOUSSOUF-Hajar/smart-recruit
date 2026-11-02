@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["skills", "experiences", "educations", "languages", "summary"],
+  "properties": {
+    "skills": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "evidence"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "evidence": { "type": "string", "minLength": 1, "maxLength": 300 }
+        }
+      }
+    },
+    "experiences": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "company", "startYear", "endYear", "durationMonths"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 150 },
+          "company": { "type": ["string", "null"], "maxLength": 150 },
+          "startYear": { "type": ["integer", "null"], "minimum": 1950, "maximum": 2100 },
+          "endYear": { "type": ["integer", "null"], "minimum": 1950, "maximum": 2100 },
+          "durationMonths": { "type": ["integer", "null"], "minimum": 0, "maximum": 720 }
+        }
+      }
+    },
+    "educations": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["degree", "school", "year"],
+        "properties": {
+          "degree": { "type": "string", "minLength": 1, "maxLength": 150 },
+          "school": { "type": ["string", "null"], "maxLength": 150 },
+          "year": { "type": ["integer", "null"], "minimum": 1950, "maximum": 2100 }
+        }
+      }
+    },
+    "languages": {
+      "type": "array",
+      "maxItems": 15,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["language", "level"],
+        "properties": {
+          "language": { "type": "string", "minLength": 1, "maxLength": 40 },
+          "level": { "type": ["string", "null"], "maxLength": 20 }
+        }
+      }
+    },
+    "summary": { "type": "string", "minLength": 1, "maxLength": 600 }
+  }
+}

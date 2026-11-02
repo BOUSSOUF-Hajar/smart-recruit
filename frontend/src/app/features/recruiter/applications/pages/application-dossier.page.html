@@ -1,0 +1,242 @@
+<a mat-button routerLink="/recruiter/applications" class="back">
+  <mat-icon>arrow_back</mat-icon>
+  <span i18n>Candidatures</span>
+</a>
+
+@if (dossier.isLoading() || saving()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (conflict()) {
+  <div class="banner" role="alert">
+    <span i18n>Cette candidature a été modifiée par quelqu'un d'autre depuis son affichage.</span>
+    <button mat-flat-button type="button" (click)="reload()" i18n>Recharger</button>
+  </div>
+}
+
+@if (data(); as d) {
+  <header class="header">
+    <div class="identity">
+      <h1>{{ d.candidate.fullName }}</h1>
+      @if (d.candidate.headline) {
+        <p class="headline">{{ d.candidate.headline }}</p>
+      }
+      <p class="sub">
+        <span i18n>Candidature à</span>
+        <a [routerLink]="['/recruiter/jobs', d.job.id]">{{ d.job.title }}</a>
+        · <span i18n>reçue le {{ d.submittedAt | date: 'd MMMM y' }}</span>
+      </p>
+    </div>
+    <div class="status">
+      <app-application-status [status]="d.status" />
+      @if (d.allowedTransitions.length) {
+        <button mat-flat-button type="button" (click)="changeStatus(d)" [disabled]="saving()" i18n>
+          Faire avancer
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (d.rejection; as rejection) {
+    <p class="note rejected">
+      <strong i18n>Motif du rejet :</strong> {{ reasonLabel(rejection.reason) }}
+      @if (rejection.comment) {
+        — {{ rejection.comment }}
+      }
+    </p>
+  }
+  @if (d.withdrawalComment) {
+    <p class="note"><strong i18n>Message du candidat :</strong> {{ d.withdrawalComment }}</p>
+  }
+
+  <mat-tab-group mat-stretch-tabs="false" class="tabs">
+    <mat-tab label="Profil" i18n-label>
+      <div class="tab grid">
+        <section class="card">
+          <h2 i18n>Coordonnées</h2>
+          <dl>
+            <dt i18n>Email</dt>
+            <dd>
+              <a [href]="'mailto:' + d.candidate.email">{{ d.candidate.email }}</a>
+            </dd>
+            @if (d.candidate.phone) {
+              <dt i18n>Téléphone</dt>
+              <dd>{{ d.candidate.phone }}</dd>
+            }
+            @if (d.candidate.city) {
+              <dt i18n>Ville</dt>
+              <dd>{{ d.candidate.city }}, {{ d.candidate.countryCode }}</dd>
+            }
+            @if (d.candidate.yearsOfExperience !== null) {
+              <dt i18n>Expérience</dt>
+              <dd i18n>{{ d.candidate.yearsOfExperience }} an(s)</dd>
+            }
+          </dl>
+          <h2 i18n>CV envoyé</h2>
+          @if (d.resume; as resume) {
+            <p class="resume">
+              <mat-icon aria-hidden="true">description</mat-icon>
+              <span
+                >{{ resume.originalFilename }}
+                <span class="sub">· {{ size(resume.sizeBytes) }}</span></span
+              >
+            </p>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="downloadResume(d)"
+              [disabled]="downloading()"
+            >
+              <mat-icon>download</mat-icon>
+              <span i18n>Télécharger</span>
+            </button>
+          }
+        </section>
+
+        <section class="card">
+          @if (d.candidate.summary) {
+            <h2 i18n>Résumé</h2>
+            <p class="text">{{ d.candidate.summary }}</p>
+          }
+          <h2 i18n>Compétences</h2>
+          <ul class="tags">
+            @for (skill of d.candidate.skills; track skill.skillId) {
+              <li>
+                {{ skill.name }} · {{ skillLevel(skill.level) }}
+                @if (skill.years) {
+                  <span class="sub">({{ skill.years }} an(s))</span>
+                }
+              </li>
+            }
+          </ul>
+          @if (d.candidate.languages.length) {
+            <h2 i18n>Langues</h2>
+            <ul class="tags">
+              @for (lang of d.candidate.languages; track lang.languageCode) {
+                <li>{{ language(lang.languageCode, lang.level) }}</li>
+              }
+            </ul>
+          }
+          @if (d.candidate.links.length) {
+            <h2 i18n>Liens</h2>
+            <ul class="plain">
+              @for (link of d.candidate.links; track link.url) {
+                <li>
+                  {{ linkType(link.type) }} :
+                  <a [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.url }}</a>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+
+        <section class="card wide">
+          <h2 i18n>Expériences</h2>
+          @for (exp of d.candidate.experiences; track $index) {
+            <article class="item">
+              <strong>{{ exp.jobTitle }}</strong> · {{ exp.companyName }}
+              <div class="sub">
+                {{ exp.startDate | date: 'MMM y' }} –
+                @if (exp.endDate) {
+                  {{ exp.endDate | date: 'MMM y' }}
+                } @else {
+                  <span i18n>aujourd'hui</span>
+                }
+              </div>
+              @if (exp.description) {
+                <p class="text">{{ exp.description }}</p>
+              }
+            </article>
+          } @empty {
+            <p class="sub" i18n>Aucune expérience renseignée.</p>
+          }
+          <h2 i18n>Formations</h2>
+          @for (edu of d.candidate.educations; track $index) {
+            <article class="item">
+              <strong>{{ edu.degree }}</strong> · {{ edu.school }}
+              <div class="sub">
+                @if (edu.fieldOfStudy) {
+                  {{ edu.fieldOfStudy }} ·
+                }
+                {{ edu.startYear }} – {{ edu.endYear }}
+              </div>
+            </article>
+          } @empty {
+            <p class="sub" i18n>Aucune formation renseignée.</p>
+          }
+        </section>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Historique" i18n-label>
+      <div class="tab">
+        <ol class="history">
+          @for (entry of entries(); track entry.id) {
+            <li>
+              <div class="line">
+                <strong>{{ eventLabel(entry) }}</strong>
+                @if (entry.type === 'STATUS_CHANGED') {
+                  <span
+                    >{{ statusLabel(entry.fromStatus) }} → {{ statusLabel(entry.toStatus) }}</span
+                  >
+                }
+              </div>
+              <div class="sub">
+                {{ entry.occurredAt | date: 'd MMM y, HH:mm' }}
+                @if (entry.actor?.name; as actorName) {
+                  · {{ actorName }}
+                }
+              </div>
+              @if (entry.details.rejectionReason) {
+                <div i18n>Motif : {{ reasonLabel(entry.details.rejectionReason) }}</div>
+              }
+              @if (entry.details.comment) {
+                <div class="text">« {{ entry.details.comment }} »</div>
+              }
+            </li>
+          }
+        </ol>
+        <p class="sub" i18n>L'historique ne peut être ni modifié ni supprimé.</p>
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span i18n>Entretiens ({{ d.interviews.length }})</span>
+      </ng-template>
+      <div class="tab">
+        <app-interviews-panel [applicationId]="d.id" [status]="d.status" (changed)="refresh()" />
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span i18n>Assistance IA</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <div class="tab">
+          @defer (on viewport) {
+            <app-ai-panel [applicationId]="d.id" />
+          } @placeholder {
+            <p i18n>Chargement de l'assistance IA…</p>
+          }
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span i18n>Notes ({{ d.notesCount }})</span>
+      </ng-template>
+      <div class="tab">
+        <app-notes-panel [applicationId]="d.id" (changed)="refresh()" />
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+} @else if (notFound()) {
+  <app-empty-state icon="search_off" title="Candidature introuvable" i18n-title>
+    <a mat-flat-button routerLink="/recruiter/applications" i18n>Toutes les candidatures</a>
+  </app-empty-state>
+} @else if (dossier.error()) {
+  <p role="alert" i18n>Le dossier n'a pas pu être chargé.</p>
+}

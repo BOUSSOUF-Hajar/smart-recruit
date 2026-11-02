@@ -1,0 +1,17 @@
+Mehdi Lahlou
+Développeur backend Node.js
+
+mehdi.lahlou@exemple.ma
++212 6 99 88 77 66
+
+Expériences
+2023 - 2025 Développeur Node.js, E-Commerce Atlas
+API REST avec Node.js et Express, bases MongoDB et Redis, files de messages Kafka.
+2021 - 2023 Développeur PHP, Web Agency Fès
+Sites Symfony et MySQL.
+
+Formation
+2021 Licence en informatique, Université Sidi Mohamed Ben Abdellah
+
+Compétences : Node.js, Express, MongoDB, Redis, Kafka, PHP, Symfony, MySQL
+Langues : arabe, français, anglais (B1)

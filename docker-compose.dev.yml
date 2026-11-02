@@ -1,0 +1,40 @@
+# Environnement de développement : uniquement les dépendances du backend.
+# Démarrage : docker compose -f docker-compose.dev.yml up -d
+# L'application complète (frontend, backend, PostgreSQL, Ollama) : docker-compose.yml (phase 11).
+# IA (phase 8) : après le premier démarrage, télécharger le modèle une fois :
+#   docker compose -f docker-compose.dev.yml exec ollama ollama pull qwen3.5:9b   (environ 6,6 Go)
+name: smartrecruit-dev
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-smartrecruit}
+      POSTGRES_USER: ${DB_USERNAME:-smartrecruit}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-smartrecruit}
+    ports:
+      - "5432:5432"            # publié en dev seulement, pour l'IDE et psql
+    volumes:
+      # PostgreSQL 18+ : le volume se monte sur /var/lib/postgresql (et non plus .../data)
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest   # à épingler sur une version précise avec le modèle (banc d'essai)
+    ports:
+      - "11434:11434"          # publié en dev seulement ; le backend l'appelle sur localhost
+    volumes:
+      - ollama-models:/root/.ollama   # évite de retélécharger plusieurs Go à chaque démarrage
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+  ollama-models:

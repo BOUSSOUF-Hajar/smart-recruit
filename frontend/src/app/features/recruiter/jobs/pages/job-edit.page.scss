@@ -1,0 +1,108 @@
+.back {
+  margin-bottom: 8px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+h1 {
+  margin: 0;
+  font: var(--mat-sys-headline-small);
+}
+
+h2 {
+  margin: 24px 0 8px;
+  font: var(--mat-sys-title-medium);
+}
+
+.meta,
+.hint {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.lifecycle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 0 16px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--mat-sys-tertiary-container);
+}
+
+.banner--error {
+  display: block;
+  color: var(--mat-sys-on-error-container);
+  background: var(--mat-sys-error-container);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0 16px;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.pair {
+  display: flex;
+  gap: 12px;
+}
+
+.pair mat-form-field:first-child {
+  flex: 1;
+}
+
+.short {
+  width: 96px;
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.name {
+  flex: 1 1 160px;
+}
+
+.level {
+  width: 200px;
+}
+
+.row-error {
+  flex-basis: 100%;
+  margin: 0 0 8px;
+  color: var(--mat-sys-error);
+  font: var(--mat-sys-body-small);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}

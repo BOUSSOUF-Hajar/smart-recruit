@@ -1,0 +1,30 @@
+server:
+  # Derrière Nginx (docker-compose.yml) : adresse réelle du client et schéma d'origine lus dans
+  # X-Forwarded-*, seulement quand la requête vient d'une adresse privée (valve Tomcat RemoteIpValve).
+  # L'adresse sert au journal d'audit et à la limitation des tentatives de connexion.
+  forward-headers-strategy: native
+
+spring:
+  datasource:
+    # Aucune valeur par défaut : une variable absente = démarrage refusé
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+smartrecruit:
+  storage:
+    root-directory: ${STORAGE_ROOT}   # volume Docker persistant, hors de l'image
+  app:
+    public-url: ${PUBLIC_URL}   # aucune valeur par défaut : absente = démarrage refusé
+  security:
+    jwt:
+      secret: ${JWT_SECRET}     # 32 octets minimum, jamais dans le dépôt (ENF-SEC-11)
+  bootstrap:
+    admin:
+      email: ${INITIAL_ADMIN_EMAIL:}
+      password: ${INITIAL_ADMIN_PASSWORD:}
+
+logging:
+  structured:
+    format:
+      console: ecs              # logs JSON (Elastic Common Schema)

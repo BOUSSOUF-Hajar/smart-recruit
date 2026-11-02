@@ -1,0 +1,16 @@
+Karim Bennani
+Full-stack developer
+karim.bennani@mail.example | 06 61 22 33 44
+Date de naissance : 2 mai 1993
+
+Professional experience
+2020 - 2025: Senior full-stack engineer at Nova Retail, Casablanca
+Built Angular 17 front-ends and Spring Boot microservices; containerised with Docker and Kubernetes.
+2016 - 2020: Developer at Sofrecom Maroc
+Java and Oracle PL/SQL, continuous integration with Jenkins.
+
+Education
+2016 Master in Computer Science, Université Mohammed V
+
+Skills: Angular, TypeScript, Java, Spring Boot, Docker, Kubernetes, Jenkins
+Languages: French (fluent), English (C1), Arabic (native)

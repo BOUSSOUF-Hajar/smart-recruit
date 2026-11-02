@@ -1,0 +1,25 @@
+# Build
+backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Secrets
+.env
+
+# OS
+.DS_Store
+
+# Phase 4 : CV stockés en développement
+backend/data/
+
+# Phase 11 : tests de bout en bout et journaux
+frontend/test-results/
+frontend/playwright-report/
+compose-logs.txt
+backend/*.args

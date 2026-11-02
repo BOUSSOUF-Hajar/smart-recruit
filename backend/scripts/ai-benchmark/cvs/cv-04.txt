@@ -1,0 +1,16 @@
+Youssef Amrani
+DevOps engineer
+y.amrani@exemple.ma | +212 7 00 11 22 33 | github.com/yamrani
+
+Parcours
+2021 - 2025 Ingénieur DevOps, CloudAtlas
+Mise en place de clusters Kubernetes, pipelines GitLab CI, supervision Prometheus et Grafana.
+Infrastructure as code avec Terraform sur AWS.
+2018 - 2021 Administrateur systèmes Linux, Telecom Plus
+
+Formation
+2018 Licence professionnelle en réseaux et systèmes, FST Settat
+
+Compétences
+Kubernetes, Docker, Terraform, AWS, Linux, GitLab CI, Prometheus, Grafana
+Langues : français courant, anglais technique

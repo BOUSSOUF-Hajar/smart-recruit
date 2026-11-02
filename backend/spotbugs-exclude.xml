@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Exclusions SpotBugs, chacune motivée. Une nouvelle exclusion se justifie ici, jamais en silence. -->
+<FindBugsFilter>
+    <!-- Exposition de représentation interne : les records, entités JPA et beans Spring partagent
+         volontairement des références (collections immuables, beans injectés). Bruit sans valeur ici. -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+    <!-- Constructeur qui lève une exception : les objets du domaine valident leurs invariants dès la
+         construction, c'est voulu. L'« attaque par finaliseur » visée suppose une sous-classe
+         malveillante qui redéfinit finalize() ; finalize() est dépréciée pour suppression et ces
+         classes ne traitent aucune donnée venant d'un code non fiable. -->
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+    <!-- Code généré par MapStruct -->
+    <Match>
+        <Class name="~.*MapperImpl"/>
+    </Match>
+</FindBugsFilter>

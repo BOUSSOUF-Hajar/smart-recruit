@@ -1,0 +1,18 @@
+# US-56 : données de démonstration, chargées au démarrage sur une base vide.
+# À combiner avec un profil d'environnement : « dev,demo » en local, « prod,demo » dans docker-compose.yml.
+smartrecruit:
+  demo:
+    # Mot de passe commun des comptes de démonstration (affiché dans le README) ; aucun compte réel
+    password: ${DEMO_PASSWORD:Demo-SmartRecruit-2026}
+  bootstrap:
+    admin:
+      # L'admin de démonstration remplace l'admin initial (dont le mot de passe serait à changer)
+      email: ""
+      password: ""
+
+# US-58 : la démonstration montre aussi l'API (http://localhost:8080/api/docs/swagger-ui.html)
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

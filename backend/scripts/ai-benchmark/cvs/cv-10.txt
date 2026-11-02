@@ -1,0 +1,18 @@
+Rachid Ouazzani
+Senior software architect
+
+rachid.ouazzani@exemple.com | +212 5 37 11 22 33
+Adresse : 7, boulevard Zerktouni, Casablanca
+Date of birth: 1984
+
+Experience
+2015 - 2025 Software architect, Banque du Littoral
+Microservices architecture with Java, Spring Boot and Kafka; event-driven systems; mentoring of 12 developers.
+2008 - 2015 Lead developer, Inetum Maroc
+Java EE, Oracle, design of REST API.
+
+Education
+2008 Engineering degree, École Centrale Casablanca
+
+Skills: Java, Spring Boot, Kafka, microservices, REST API, Oracle, leadership
+Languages: French (native-like), English (C1), Arabic (native)

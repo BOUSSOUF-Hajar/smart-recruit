@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: smartrecruit
+  profiles:
+    default: dev            # profil utilisé si aucun n'est précisé
+  threads:
+    virtual:
+      enabled: true         # une requête HTTP = un thread virtuel
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+  # --- US-02 : base de données ---------------------------------------------
+  jpa:
+    open-in-view: false     # pas de session Hibernate ouverte pendant le rendu de la réponse
+    hibernate:
+      ddl-auto: validate    # tous profils : seul Flyway modifie le schéma, Hibernate vérifie
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC    # RG-32 : dates-heures stockées en UTC
+        default_batch_fetch_size: 20   # collections paresseuses chargées par lots, pas une requête par élément
+  # --- Phase 4 : téléversement des CV (RG-07) ------------------------------
+  servlet:
+    multipart:
+      max-file-size: 5MB      # = ResumeRules.MAX_SIZE_BYTES ; au-delà, Tomcat coupe avant la lecture complète
+      max-request-size: 6MB   # fichier + en-têtes multipart
+  flyway:
+    locations: classpath:db/migration
+    validate-on-migrate: true   # refuse de démarrer si un script déjà appliqué a été modifié
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      probes:
+        enabled: true       # /actuator/health/liveness et /readiness
+      group:
+        readiness:
+          include: readinessState, db   # prête à recevoir du trafic seulement si la base répond
+
+# --- Phase 12 : documentation OpenAPI (US-58) ------------------------------
+# Sous /api pour passer par le relais Nginx (même origine). Coupée par défaut, donc en prod ;
+# activée par les profils dev et demo (« prod,demo » : demo, lu en dernier, l'emporte).
+springdoc:
+  api-docs:
+    enabled: false
+    path: /api/docs/openapi
+  swagger-ui:
+    enabled: false
+    path: /api/docs/swagger-ui.html   # interface servie sous /api/docs/swagger-ui/
+
+logging:
+  pattern:
+    # US-03 : identifiant de corrélation dans chaque ligne de log texte (dev, test)
+    # En prod, les logs JSON (ECS) incluent déjà tout le contenu du MDC.
+    level: "%5p [%X{correlationId:-}]"
+
+smartrecruit:
+  app:
+    default-timezone: Africa/Casablanca
+  # --- Phase 8 : assistance IA (facultative, RG-28) ------------------------
+  ai:
+    enabled: ${AI_ENABLED:false}
+    provider: ollama
+    ollama:
+      base-url: ${AI_OLLAMA_URL:http://localhost:11434}
+      model: ${AI_MODEL:qwen3.5:9b}       # provisoire : épinglé après le banc d'essai (docs/ai-model-benchmark.md)
+      read-timeout: 120s
+  # --- Phase 3 : sécurité -------------------------------------------------
+  security:
+    jwt:
+      issuer: smartrecruit
+      access-token-ttl: 15m       # ENF-SEC-04
+      refresh-token-ttl: 7d
+    refresh-cookie:
+      secure: true                # accepté par les navigateurs sur http://localhost
+    rate-limit:
+      login-failures: 5           # US-12 : 5 échecs par email…
+      login-window: 15m           # …sur 15 minutes glissantes
+      registrations-per-ip: 10
+      registration-window: 1h

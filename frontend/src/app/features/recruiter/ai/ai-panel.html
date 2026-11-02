@@ -1,0 +1,218 @@
+@if (status.hasValue() && !enabled()) {
+  <p class="sub" i18n>L'assistance IA est désactivée sur cette installation.</p>
+} @else if (enabled()) {
+  <div class="actions">
+    <button mat-stroked-button type="button" (click)="analyse()" [disabled]="!!running()">
+      <mat-icon>description</mat-icon>
+      <span i18n>Analyser le CV</span>
+    </button>
+    <button mat-flat-button type="button" (click)="computeMatch()" [disabled]="!!running()">
+      <mat-icon>insights</mat-icon>
+      <span i18n>Calculer l'adéquation</span>
+    </button>
+  </div>
+
+  @if (running(); as task) {
+    <div class="progress" role="status">
+      <mat-progress-bar mode="indeterminate" />
+      <span class="sub">
+        @if (task.status === 'PENDING') {
+          <ng-container i18n>En file d'attente…</ng-container>
+        } @else {
+          <ng-container i18n>Analyse en cours (jusqu'à deux minutes)…</ng-container>
+        }
+      </span>
+    </div>
+  }
+  @if (failure(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  @if (matchData(); as m) {
+    <section class="card">
+      <header class="score">
+        <span class="value" aria-hidden="true">{{ m.score }}</span>
+        <div>
+          <strong i18n>Adéquation : {{ m.score }} / 100 — {{ label(m) }}</strong>
+          <p class="disclaimer">{{ m.disclaimer }}</p>
+        </div>
+      </header>
+
+      <h3 i18n>Décomposition</h3>
+      <dl class="breakdown">
+        <dt i18n>Compétences requises (60 %)</dt>
+        <dd>
+          <span class="bar"
+            ><span [style.width]="percent(m.breakdown.requiredCoverage)"></span
+          ></span>
+          {{ percent(m.breakdown.requiredCoverage) }}
+        </dd>
+        <dt i18n>Compétences souhaitées (20 %)</dt>
+        <dd>
+          @if (m.breakdown.preferredCoverage !== null) {
+            <span class="bar"
+              ><span [style.width]="percent(m.breakdown.preferredCoverage)"></span
+            ></span>
+            {{ percent(m.breakdown.preferredCoverage) }}
+          } @else {
+            <span class="sub" i18n>aucune demandée (poids redistribués)</span>
+          }
+        </dd>
+        <dt i18n>Expérience (20 %)</dt>
+        <dd>
+          <span class="bar"><span [style.width]="percent(m.breakdown.experienceFit)"></span></span>
+          {{ percent(m.breakdown.experienceFit) }}
+        </dd>
+      </dl>
+      @for (warning of m.warnings; track warning) {
+        <p class="warning" role="note">{{ warning }}</p>
+      }
+
+      <div class="columns">
+        <div>
+          <h3 i18n>Compétences correspondantes</h3>
+          <ul class="plain">
+            @for (skill of m.matchedSkills; track skill.skillId) {
+              <li>
+                <strong>{{ skill.name }}</strong>
+                <span class="tag">
+                  @if (skill.source === 'PROFILE') {
+                    <ng-container i18n>profil</ng-container>
+                  } @else {
+                    <ng-container i18n>CV</ng-container>
+                  }
+                </span>
+                @if (!skill.required) {
+                  <span class="tag" i18n>souhaitée</span>
+                }
+                @if (skill.level) {
+                  <span class="sub">{{ level(skill.level) }}</span>
+                }
+                @if (skill.belowRequiredLevel) {
+                  <span class="warning-inline" i18n>sous le niveau demandé</span>
+                }
+                @if (skill.evidence) {
+                  <blockquote>« {{ skill.evidence }} »</blockquote>
+                }
+              </li>
+            } @empty {
+              <li class="sub" i18n>Aucune.</li>
+            }
+          </ul>
+        </div>
+        <div>
+          <h3 i18n>Compétences requises manquantes</h3>
+          <ul class="plain">
+            @for (skill of requiredMissing(); track skill.skillId) {
+              <li>{{ skill.name }}</li>
+            } @empty {
+              <li class="sub" i18n>Aucune.</li>
+            }
+          </ul>
+          <h3 i18n>Compétences souhaitées manquantes</h3>
+          <ul class="plain">
+            @for (skill of preferredMissing(); track skill.skillId) {
+              <li>{{ skill.name }}</li>
+            } @empty {
+              <li class="sub" i18n>Aucune.</li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="columns">
+        <div>
+          <h3 i18n>Points forts</h3>
+          <ul>
+            @for (item of m.strengths; track $index) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </div>
+        <div>
+          <h3 i18n>Points à vérifier</h3>
+          <ul>
+            @for (item of m.weaknesses; track $index) {
+              <li>{{ item }}</li>
+            } @empty {
+              <li class="sub" i18n>Aucun.</li>
+            }
+          </ul>
+        </div>
+      </div>
+      <h3 i18n>Synthèse</h3>
+      <p class="text">{{ m.summary }}</p>
+      <p class="meta" i18n>
+        Calculé le {{ m.createdAt | date: 'd MMM y, HH:mm' }} · formule
+        {{ m.breakdown.formulaVersion }} · explication {{ m.model.name }} ({{
+          m.model.promptVersion
+        }})
+      </p>
+    </section>
+  }
+
+  @if (analysisData(); as a) {
+    <section class="card">
+      <h3 i18n>Analyse du CV</h3>
+      <p class="text">{{ a.summary }}</p>
+      <h4 i18n>Compétences détectées</h4>
+      <ul class="plain">
+        @for (skill of a.skills; track skill.name) {
+          <li>
+            <strong>{{ skill.referenceName ?? skill.name }}</strong>
+            @if (!skill.skillId) {
+              <span class="tag" i18n>hors référentiel</span>
+            }
+            <blockquote>« {{ skill.evidence }} »</blockquote>
+          </li>
+        }
+      </ul>
+      @if (a.experiences.length) {
+        <h4 i18n>Expériences</h4>
+        <ul>
+          @for (exp of a.experiences; track $index) {
+            <li>
+              {{ exp.title }}
+              @if (exp.company) {
+                · {{ exp.company }}
+              }
+              @if (exp.startYear) {
+                <span class="sub">({{ exp.startYear }} – {{ exp.endYear ?? '…' }})</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+      @if (a.educations.length) {
+        <h4 i18n>Formations</h4>
+        <ul>
+          @for (edu of a.educations; track $index) {
+            <li>
+              {{ edu.degree }}{{ edu.school ? ' · ' + edu.school : ''
+              }}{{ edu.year ? ' (' + edu.year + ')' : '' }}
+            </li>
+          }
+        </ul>
+      }
+      @if (a.languages.length) {
+        <h4 i18n>Langues</h4>
+        <p>
+          @for (lang of a.languages; track $index) {
+            <span class="tag">{{ lang.language }}{{ lang.level ? ' · ' + lang.level : '' }}</span>
+          }
+        </p>
+      }
+      <p class="disclaimer">{{ a.disclaimer }}</p>
+      <p class="meta" i18n>
+        Analysé le {{ a.createdAt | date: 'd MMM y, HH:mm' }} · {{ a.model.name }} ({{
+          a.model.promptVersion
+        }})
+      </p>
+    </section>
+  } @else if (!matchData() && !running() && analysis.status() !== 'loading') {
+    <p class="sub" i18n>
+      Aucune analyse pour l'instant. L'analyse extrait du CV les compétences, expériences et
+      formations ; le calcul d'adéquation compare le profil et le CV aux exigences de l'offre.
+    </p>
+  }
+}

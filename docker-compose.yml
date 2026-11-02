@@ -1,0 +1,107 @@
+# SmartRecruit — application complète en une commande (US-54) :
+#   cp .env.example .env
+#   docker compose up --build
+# puis http://localhost:8080 (identifiants de démonstration dans le README).
+#
+# Seul le frontend publie un port : PostgreSQL, Ollama et le backend ne sont joignables que sur le
+# réseau interne. Chaque service attend que ceux dont il dépend soient sains.
+name: smartrecruit
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-smartrecruit}
+      POSTGRES_USER: ${DB_USERNAME:-smartrecruit}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD manquant, copiez .env.example en .env}
+    volumes:
+      # PostgreSQL 18+ : le volume se monte sur /var/lib/postgresql (et non plus .../data)
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [internal]
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:${OLLAMA_VERSION:-latest}   # à épingler avec le modèle (docs/ai-model-benchmark.md)
+    volumes:
+      - ollama-models:/root/.ollama     # les modèles (plusieurs Go) survivent aux redémarrages
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+    restart: unless-stopped
+
+  # Télécharge le modèle une fois (environ 6,6 Go), puis s'arrête. L'application est utilisable
+  # pendant le téléchargement : l'IA est simplement signalée « indisponible » jusqu'à la fin.
+  ollama-model:
+    image: ollama/ollama:${OLLAMA_VERSION:-latest}
+    environment:
+      OLLAMA_HOST: ollama:11434
+    entrypoint: ["ollama", "pull", "${AI_MODEL:-qwen3.5:9b}"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks: [internal]
+    restart: "no"
+
+  backend:
+    build: ./backend
+    image: ${BACKEND_IMAGE:-smartrecruit/backend:local}
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod,demo}
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-smartrecruit}
+      DB_USERNAME: ${DB_USERNAME:-smartrecruit}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET manquant, copiez .env.example en .env}
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8080}
+      STORAGE_ROOT: /data/resumes
+      INITIAL_ADMIN_EMAIL: ${INITIAL_ADMIN_EMAIL:-}
+      INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:-}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-Demo-SmartRecruit-2026}
+      AI_ENABLED: ${AI_ENABLED:-true}
+      AI_OLLAMA_URL: http://ollama:11434
+      AI_MODEL: ${AI_MODEL:-qwen3.5:9b}
+    volumes:
+      - resumes:/data/resumes
+    # L'IA est facultative (RG-28) : le backend ne dépend pas d'Ollama, il le signale indisponible
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/actuator/health/readiness | grep -q '\"UP\"'"]
+      interval: 10s
+      timeout: 3s
+      start_period: 60s
+      retries: 5
+    networks: [internal]
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    image: ${FRONTEND_IMAGE:-smartrecruit/frontend:local}
+    ports:
+      - "${HTTP_PORT:-8080}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [internal]
+    restart: unless-stopped
+
+networks:
+  internal:
+
+volumes:
+  pgdata:
+  resumes:
+  ollama-models:

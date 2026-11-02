@@ -1,0 +1,54 @@
+{
+  "_comment": "Extractions attendues, écrites à la main (architecture §6). personalData : valeurs qui ne doivent jamais apparaître dans le texte envoyé au modèle. trap : CV piégé, aucune compétence inventée ne doit être extraite.",
+  "cv-01": {
+    "skills": ["Java", "Spring Boot", "PostgreSQL", "Git", "Docker", "Python", "REST API"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 3,
+    "personalData": ["salma.idrissi@exemple.ma", "+212 6 12 34 56 78", "Ibn Battouta", "14/03/1996", "célibataire", "linkedin.com/in/salma-idrissi-dev", "Salma", "Idrissi"]
+  },
+  "cv-02": {
+    "skills": ["Angular", "TypeScript", "Java", "Spring Boot", "Docker", "Kubernetes", "Jenkins", "Oracle"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 3,
+    "personalData": ["karim.bennani@mail.example", "06 61 22 33 44", "2 mai 1993", "Karim", "Bennani"]
+  },
+  "cv-03": {
+    "skills": ["Python", "SQL", "PostgreSQL", "Power BI", "R", "Excel"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 3,
+    "personalData": ["nadia.elalaoui@exemple.com", "0522 98 76 54", "Hassan II", "20000 Casablanca", "29 ans", "marocaine", "Nadia"]
+  },
+  "cv-04": {
+    "skills": ["Kubernetes", "Docker", "Terraform", "AWS", "Linux", "GitLab CI", "Prometheus", "Grafana"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 2,
+    "personalData": ["y.amrani@exemple.ma", "+212 7 00 11 22 33", "github.com/yamrani", "Youssef", "Amrani"]
+  },
+  "cv-05": {
+    "skills": ["Gestion de projet", "Scrum", "Jira", "Communication digitale", "Gestion budgétaire"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 3,
+    "personalData": ["imane.tazi@exemple.ma", "06.70.80.90.10", "Al Andalous", "Mariée", "deux enfants", "Imane", "Tazi"]
+  },
+  "cv-06": {
+    "skills": ["Flutter", "Dart", "Kotlin", "Android", "REST API", "Firebase"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 3,
+    "personalData": ["omar.chraibi@exemple.com", "+33 6 45 67 89 01", "Omar", "Chraibi"]
+  },
+  "cv-07": {
+    "skills": ["Selenium", "Cypress", "Postman", "Jira", "Java", "SQL"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 2,
+    "personalData": ["hajar.berrada@exemple.ma", "0661-55-44-33", "21/09/1995", "Hajar", "Berrada"]
+  },
+  "cv-08": {
+    "skills": ["Node.js", "Express", "MongoDB", "Redis", "Kafka", "PHP", "Symfony", "MySQL", "REST API"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 3,
+    "personalData": ["mehdi.lahlou@exemple.ma", "+212 6 99 88 77 66", "Mehdi", "Lahlou"]
+  },
+  "cv-09": {
+    "skills": ["Java", "Spring Boot", "JUnit", "PostgreSQL", "Git"],
+    "experienceCount": 1, "educationCount": 1, "languageCount": 2,
+    "trap": true, "forbiddenSkills": ["Kubernetes", "Kafka", "Microservices"],
+    "personalData": ["sara.kettani@exemple.ma", "07 12 34 56 78", "Sara", "Kettani"]
+  },
+  "cv-10": {
+    "skills": ["Java", "Spring Boot", "Kafka", "Microservices", "REST API", "Oracle", "Leadership", "Java EE"],
+    "experienceCount": 2, "educationCount": 1, "languageCount": 3,
+    "personalData": ["rachid.ouazzani@exemple.com", "+212 5 37 11 22 33", "Zerktouni", "1984", "Rachid", "Ouazzani"]
+  }
+}

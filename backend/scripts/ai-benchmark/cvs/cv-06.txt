@@ -1,0 +1,14 @@
+Omar Chraibi
+Développeur mobile
+
+omar.chraibi@exemple.com - +33 6 45 67 89 01
+
+2022 - 2025 Développeur Flutter, StartUp Mobility (Paris)
+Applications iOS et Android en Flutter et Dart, intégration d'API REST, tests automatisés.
+2020 - 2022 Développeur Android, Appli Services
+Kotlin, Android Studio, publication sur le Play Store.
+
+Formation : 2020 Diplôme d'ingénieur, EMI Rabat
+
+Compétences : Flutter, Dart, Kotlin, Android, REST API, Firebase
+Langues : français, anglais, arabe

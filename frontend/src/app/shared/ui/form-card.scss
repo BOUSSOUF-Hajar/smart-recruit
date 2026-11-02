@@ -1,0 +1,46 @@
+// Gabarit commun des formulaires courts en carte : connexion, inscription, mot de passe
+:host {
+  display: block;
+}
+
+.form-card {
+  max-width: 440px;
+  margin: 24px auto;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+h1 {
+  margin: 0 0 16px;
+  font: var(--mat-sys-headline-small);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-error {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: var(--mat-sys-on-error-container);
+  background: var(--mat-sys-error-container);
+}
+
+.hint {
+  margin: 0 0 8px;
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+}
+
+.alternative {
+  margin: 16px 0 0;
+  text-align: center;
+}
+
+mat-progress-bar {
+  margin-bottom: 8px;
+}
