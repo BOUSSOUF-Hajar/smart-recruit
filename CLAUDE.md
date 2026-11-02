@@ -12,6 +12,7 @@ Stack : Spring Boot 4.1 (Java 25, Spring Modulith, Flyway, PostgreSQL 18), Angul
 - `docs/api.md` : contrat REST.
 - `docs/architecture*.md` : architecture globale (registre des décisions au §10), backend et frontend.
 - `docs/adr/` : une fiche par décision ; `docs/preparation-entretien.md` : questions d'entretien par thème.
+- `docs/guide-de-reprise.md` : poste, lancement, vérifications, tâches restantes pas à pas, problèmes connus.
 
 ## 3. Règles de travail
 - Toujours répondre en français.
@@ -39,6 +40,7 @@ Profil `demo`, mot de passe commun `Demo-SmartRecruit-2026`.
 - Candidat : `candidat@demo.example`
 
 ## 7. Points en attente
-- CI entièrement verte sur `main` (jalon J4) : seule l'analyse Trivy des images a échoué au premier passage, corrigée sur `feat/us-58-documentation` (US-54 §4) ; reste à fusionner. Les images se construisent et la pile tourne en CI.
+- CI entièrement verte sur `main` (jalon J4) : l'analyse Trivy des images, seule en échec au premier passage, est corrigée (US-54 §4) ; noter J4 dès le premier passage vert sur `main` (guide de reprise §6.1).
+- Poste de développement : JDK 25 dans `%USERPROFILE%\.jdks\jdk-25.0.5+8` (à mettre dans `JAVA_HOME`) ; backend vérifié en local le 3 novembre 2026 ; frontend et pile Docker vérifiés par la CI seule (connexion lente).
 - Exécuter le banc d'essai IA, puis épingler le modèle et la version de l'image Ollama.
 - Phase 12, US-58 (en cours) : captures d'écran. README, ADR, préparation à l'entretien, diagrammes et springdoc (vérifié par la CI) : faits.

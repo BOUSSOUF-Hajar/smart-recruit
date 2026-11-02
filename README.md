@@ -337,6 +337,7 @@ Techniques, chacune attendant un déclencheur mesuré ([architecture §9](docs/a
 | [Décisions d'architecture (ADR)](docs/adr/README.md) | Douze fiches : contexte, décision, alternatives, conséquences |
 | [Banc d'essai des modèles d'IA](docs/ai-model-benchmark.md) | Protocole et résultats |
 | [Roadmap](docs/roadmap.md) | Phases, jalons, rituel par story, bilans |
+| [Guide de reprise](docs/guide-de-reprise.md) | Préparer le poste, lancer, vérifier, tâches restantes pas à pas, problèmes connus |
 | [Préparation à l'entretien technique](docs/preparation-entretien.md) | Questions et réponses par thème, points faibles assumés |
 | [Notes de story](docs/stories/) | Pour chaque story : critères et preuves, fichiers, choix, commandes, questions |
 

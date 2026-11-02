@@ -316,7 +316,7 @@ Les trois dernières phases rendent la plateforme administrable, la font tourner
 - Vérifié par la CI (2 novembre 2026, premier push sur GitHub) : springdoc, tests, build et Playwright sur la pile `docker compose`.
 - À faire : captures d'écran ; pipeline entièrement verte sur `main`, après la fusion de la branche qui corrige les vulnérabilités trouvées par l'analyse des images ([US-54](stories/US-54.md) §4).
 
-Le poste de développement ne peut toujours rien vérifier seul (pas de JDK 25, connexion à moins de 20 Ko/s) : la CI fait les vérifications ([US-58](stories/US-58.md) §5).
+Sur le poste de développement, le backend est désormais vérifié aussi en local (3 novembre 2026 : `./mvnw verify` et SpotBugs verts, JDK 25 installé) ; le frontend et la pile Docker complète restent vérifiés par la CI seule, la connexion (moins de 20 Ko/s) ne permettant pas de télécharger les images et `node_modules` ([US-58](stories/US-58.md) §5).
 
 ## 7. Jalons
 
