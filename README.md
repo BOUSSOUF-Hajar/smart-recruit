@@ -300,7 +300,7 @@ Phases 1 à 11 livrées, en revue ; phase 12 (documentation et portfolio, US-58)
 
 Reste à vérifier ou à faire, sans le présenter comme acquis :
 
-- pipeline entièrement verte sur `main`, qui marquera le jalon J4 : au premier passage sur GitHub, tests, build, Playwright sur la pile `docker compose` et construction des images sont verts, mais l'analyse de l'image frontend a trouvé une vulnérabilité critique corrigeable ; la correction (mise à jour des paquets Alpine dans les images) est en cours de vérification ;
+- pipeline entièrement verte sur `main`, qui marquera le jalon J4 : au premier passage sur GitHub, tests, build, Playwright sur la pile `docker compose` et construction des images sont verts, mais l'analyse des images a trouvé des vulnérabilités critiques corrigeables : paquets Alpine (image frontend) et Tomcat embarqué (image backend). Elles sont corrigées sur la branche de la phase 12 (mise à jour des paquets, Spring Boot 4.1.2) ; reste le passage vert sur `main` après la fusion ;
 - banc d'essai de l'IA, puis épinglage du modèle et de la version de l'image Ollama ;
 - captures d'écran.
 

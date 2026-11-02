@@ -32,7 +32,7 @@ Le projet démarre en octobre 2026. Beaucoup de tutoriels et d'offres d'emploi p
 
 ## Ce que le développement a confirmé ou changé
 
-- Versions effectives dans le dépôt : Spring Boot **4.1.1**, Spring Modulith **2.1.0**, Angular **22.2**, TypeScript **6.0**, Vitest **5**, Playwright **1.64**.
+- Versions effectives dans le dépôt : Spring Boot **4.1.2** (passé de 4.1.1 en phase 12 pour corriger quatre CVE critiques de Tomcat 11.0.24, voir [US-54](../stories/US-54.md) §4), Spring Modulith **2.1.0**, Angular **22.2**, TypeScript **6.0**, Vitest **5**, Playwright **1.64**.
 - Les tests unitaires du frontend utilisent Vitest à la place de Karma et Jasmine.
 - **Écart constaté pendant la phase 12** : springdoc-openapi, prévu par le cahier des charges (F.1) et l'architecture backend, n'avait jamais été ajouté au `pom.xml`. Il l'est désormais en US-58 (springdoc **3.1.1**, construit sur Spring Boot 4.1.0), avec la documentation servie sous `/api/docs` en `dev` et `demo` seulement ([US-58](../stories/US-58.md)).
 - La tzdata 2026e livrée avec le JDK 25 place `Africa/Casablanca` en UTC+0 permanent ; les tests d'expiration utilisent un décalage fixe pour ne pas dépendre de cette version (README, « Fuseau horaire marocain »).

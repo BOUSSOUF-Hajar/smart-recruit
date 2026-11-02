@@ -324,6 +324,8 @@ Mode d'emploi : savoir dire le pitch sans notes, puis être capable de répondre
 
 **« Que fait ta pipeline CI ? »** Tests unitaires et d'intégration, couverture JaCoCo avec seuil bloquant, SpotBugs, Trivy (dépendances, secrets, images), tests Playwright sur la pile lancée par Docker Compose, puis publication des images sur `main`. — [US-55](stories/US-55.md)
 
+**« Pourquoi analyser à la fois le dépôt et les images ? »** Ils ne voient pas la même chose. L'analyse du dépôt lit `pom.xml` et `package-lock.json` ; l'analyse de l'image lit ce qui est réellement livré, jars et paquets du système. Au premier passage sur GitHub, l'analyse du dépôt était verte, mais celle de l'image a trouvé quatre CVE critiques dans le Tomcat embarqué : une dépendance transitive dont la version vient de la nomenclature de Spring Boot. Je les ai corrigées en passant Spring Boot de 4.1.1 à 4.1.2, et l'analyse tourne désormais à chaque push, pour bloquer la pull request plutôt que la publication. — [US-54](stories/US-54.md)
+
 **« Pourquoi la CI dès la phase 2 ? »** Pour qu'aucune régression ne passe inaperçue dès le premier commit. Ajoutée à la fin, elle découvre d'un coup des dizaines d'erreurs accumulées. — [US-05](stories/US-05.md)
 
 **« Comment sont construites tes images ? »** Builds multi-étapes. Backend : Maven puis JRE 25 seul, utilisateur non root, couches Spring Boot extraites pour qu'un changement de code ne repousse que la dernière couche. Frontend : Node puis Nginx non privilégié sur le port 8080. — [US-54](stories/US-54.md)
