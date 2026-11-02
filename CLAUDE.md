@@ -39,7 +39,6 @@ Profil `demo`, mot de passe commun `Demo-SmartRecruit-2026`.
 - Candidat : `candidat@demo.example`
 
 ## 7. Points en attente
-- Valider la vraie construction des images Docker.
-- Faire passer la CI au vert sur GitHub (jalon J4).
+- CI entièrement verte sur `main` (jalon J4) : seule l'analyse Trivy de l'image frontend a échoué au premier passage (US-54 §4). Les images se construisent et la pile tourne en CI.
 - Exécuter le banc d'essai IA, puis épingler le modèle et la version de l'image Ollama.
-- Phase 12, US-58 (en cours) : captures d'écran ; vérifier springdoc (écrit, jamais compilé). README, ADR, préparation à l'entretien et diagrammes : faits.
+- Phase 12, US-58 (en cours) : captures d'écran. README, ADR, préparation à l'entretien, diagrammes et springdoc (vérifié par la CI) : faits.

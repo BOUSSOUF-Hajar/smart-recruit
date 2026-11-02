@@ -300,10 +300,8 @@ Phases 1 à 11 livrées, en revue ; phase 12 (documentation et portfolio, US-58)
 
 Reste à vérifier ou à faire, sans le présenter comme acquis :
 
-- construire réellement les images et lancer `docker compose up --build` sur un poste avec une bonne connexion (tout a été vérifié autrement : hadolint, `docker compose config`, image simulée depuis ses couches, vraie configuration Nginx) ;
-- premier passage vert de la pipeline sur GitHub, qui marquera le jalon J4 ;
+- pipeline entièrement verte sur `main`, qui marquera le jalon J4 : au premier passage sur GitHub, tests, build, Playwright sur la pile `docker compose` et construction des images sont verts, mais l'analyse de l'image frontend a trouvé une vulnérabilité critique corrigeable ; la correction (mise à jour des paquets Alpine dans les images) est en cours de vérification ;
 - banc d'essai de l'IA, puis épinglage du modèle et de la version de l'image Ollama ;
-- vérifier l'intégration de springdoc (US-58), écrite mais pas encore compilée ;
 - captures d'écran.
 
 Détail et bilan de chaque phase : [docs/roadmap.md](docs/roadmap.md).

@@ -13,7 +13,11 @@ RUN --mount=type=cache,target=/root/.m2 mvn -B -ntp package -DskipTests \
 
 # --- 2. Exécution -----------------------------------------------------------------------------
 FROM eclipse-temurin:25-jre-alpine
-RUN addgroup -S smartrecruit && adduser -S -G smartrecruit smartrecruit \
+# Correctifs de sécurité publiés depuis la construction de l'image de base (l'analyse Trivy de la CI
+# refuse toute vulnérabilité critique corrigeable)
+# hadolint ignore=DL3017
+RUN apk upgrade --no-cache \
+ && addgroup -S smartrecruit && adduser -S -G smartrecruit smartrecruit \
  && mkdir -p /data/resumes && chown smartrecruit:smartrecruit /data/resumes
 WORKDIR /app
 # Couches de la moins à la plus changeante : une modification du code ne repousse que la dernière

@@ -184,9 +184,11 @@ jobs:
         if: always()
         run: docker compose down -v
 
+  # Sur chaque push : construction et analyse des images, pour qu'une vulnérabilité se voie avant la
+  # fusion. Sur main seulement : connexion au registre et publication.
   images:
     name: Images Docker (${{ matrix.image }})
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push'
     needs: [backend, frontend, security, e2e]
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -194,6 +196,8 @@ jobs:
       contents: read
       packages: write
     strategy:
+      # Chaque image est analysée jusqu'au bout, même si l'autre échoue
+      fail-fast: false
       matrix:
         image: [backend, frontend]
     steps:
@@ -201,13 +205,15 @@ jobs:
 
       - uses: docker/setup-buildx-action@v4
 
-      - uses: docker/login-action@v4
+      - if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - id: meta
+        if: github.ref == 'refs/heads/main'
         uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository }}/${{ matrix.image }}
@@ -226,14 +232,34 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ matrix.image }}
 
       - name: Analyser l'image (vulnérabilités critiques corrigeables)
+        id: scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: smartrecruit-${{ matrix.image }}:scan
           severity: CRITICAL
           ignore-unfixed: true
           exit-code: '1'
+          format: json
+          output: trivy-${{ matrix.image }}.json
+
+      # Chaque vulnérabilité devient une annotation (lisible sur la page de l'exécution et par l'API,
+      # sans droits d'administration) et une ligne du résumé du job
+      - name: Rapport de l'analyse
+        if: always() && steps.scan.outcome != 'skipped'
+        run: |
+          report=trivy-${{ matrix.image }}.json
+          [ -s "$report" ] || exit 0
+          jq -r '.Results[]? | .Target as $t | .Vulnerabilities[]?
+            | "::error title=\(.VulnerabilityID) (\(.PkgName))::\(.PkgName) \(.InstalledVersion) → \(.FixedVersion) dans \($t) : \(.Title // "")"' "$report"
+          {
+            echo "### Trivy : image ${{ matrix.image }}"
+            echo "| CVE | Paquet | Installé | Corrigé |"
+            echo "| --- | --- | --- | --- |"
+            jq -r '.Results[]? | .Vulnerabilities[]? | "| \(.VulnerabilityID) | \(.PkgName) | \(.InstalledVersion) | \(.FixedVersion) |"' "$report"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publier
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v7
         with:
           context: ${{ matrix.image }}

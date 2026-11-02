@@ -313,9 +313,10 @@ Les trois dernières phases rendent la plateforme administrable, la font tourner
 **Avancement (en cours)** :
 
 - Faits : README restructuré selon les rubriques d'US-58 ; 12 fiches ADR ([docs/adr/](adr/README.md)) ; [préparation à l'entretien](preparation-entretien.md) ; 7 diagrammes perdus redessinés en Mermaid. La relecture de `docs/` contre le code a aussi révélé l'absence de springdoc, désormais ajouté.
-- À faire : captures d'écran ; vérifier springdoc (compilation, tests, Playwright).
+- Vérifié par la CI (2 novembre 2026, premier push sur GitHub) : springdoc, tests, build et Playwright sur la pile `docker compose`.
+- À faire : captures d'écran ; pipeline entièrement verte sur `main`, car l'analyse de l'image frontend a trouvé une vulnérabilité critique corrigeable ([US-54](stories/US-54.md) §4).
 
-Aucune vérification automatique n'a pu tourner pour l'instant : pas de JDK 25 sur le poste, et une connexion à moins de 20 Ko/s ([US-58](stories/US-58.md) §5).
+Le poste de développement ne peut toujours rien vérifier seul (pas de JDK 25, connexion à moins de 20 Ko/s) : la CI fait les vérifications ([US-58](stories/US-58.md) §5).
 
 ## 7. Jalons
 

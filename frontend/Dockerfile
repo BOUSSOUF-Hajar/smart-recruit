@@ -13,6 +13,12 @@ RUN npm run build
 # --- 2. Exécution -----------------------------------------------------------------------------
 # Variante non privilégiée : Nginx tourne sous l'utilisateur nginx (uid 101) et écoute sur 8080
 FROM nginxinc/nginx-unprivileged:1.29-alpine
+# Correctifs de sécurité publiés depuis la construction de l'image de base (l'analyse Trivy de la CI
+# refuse toute vulnérabilité critique corrigeable) ; puis retour à l'utilisateur non privilégié
+USER root
+# hadolint ignore=DL3017
+RUN apk upgrade --no-cache
+USER 101
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY --from=build /build/dist/frontend/browser /usr/share/nginx/html
