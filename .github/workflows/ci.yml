@@ -37,12 +37,13 @@ jobs:
           cache: maven
 
       # Tests unitaires (*Test) puis d'intégration (*IT, Testcontainers : Docker est disponible sur les
-      # runners Ubuntu), fusion des couvertures et contrôle du seuil de 70 % (jacoco:check)
+      # runners Ubuntu), fusion des couvertures et contrôle du seuil de 70 % (jacoco:check).
+      # Le wrapper impose la même version de Maven (3.9.14) que sur les postes de développement.
       - name: Compiler, tester, mesurer la couverture
-        run: mvn -B -ntp verify
+        run: ./mvnw -B -ntp verify
 
       - name: Analyse statique (SpotBugs)
-        run: mvn -B -ntp spotbugs:check
+        run: ./mvnw -B -ntp spotbugs:check
 
       - name: Résumé de la couverture
         if: always()

@@ -226,7 +226,8 @@ Les douze fiches : [docs/adr/](docs/adr/README.md).
 - JDK 25
 - Node.js 24 LTS (ou 22.22.3+)
 - Docker (Docker Desktop sous Windows et macOS) : base de développement et tests d'intégration
-- Maven 3.9+ (uniquement pour générer le wrapper la première fois)
+
+Maven n'est pas nécessaire : le wrapper `./mvnw` (ou `mvnw.cmd` sous Windows) télécharge Maven 3.9.14 au premier lancement.
 
 Variables à définir en production (voir `.env.example`, sans le profil `demo`) : `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `PUBLIC_URL`, `JWT_SECRET` (32 caractères minimum), `STORAGE_ROOT` (dossier des CV, sur un volume persistant), et pour le premier démarrage `INITIAL_ADMIN_EMAIL`, `INITIAL_ADMIN_PASSWORD`.
 
@@ -237,7 +238,6 @@ docker compose -f docker-compose.dev.yml up -d   # PostgreSQL 18 sur localhost:5
 
 # Backend
 cd backend
-mvn -N wrapper:wrapper        # une seule fois : crée mvnw, mvnw.cmd et .mvn/ (à committer)
 ./mvnw verify                 # tests unitaires (*Test) puis d'intégration (*IT, Docker requis)
 ./mvnw spring-boot:run        # http://localhost:8080 ; Flyway applique les migrations au démarrage
 # avec les données de démonstration : ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,demo

@@ -42,5 +42,4 @@ Profil `demo`, mot de passe commun `Demo-SmartRecruit-2026`.
 - Valider la vraie construction des images Docker.
 - Faire passer la CI au vert sur GitHub (jalon J4).
 - Exécuter le banc d'essai IA, puis épingler le modèle et la version de l'image Ollama.
-- Générer le wrapper Maven (`mvnw`).
 - Phase 12, US-58 (en cours) : captures d'écran ; vérifier springdoc (écrit, jamais compilé). README, ADR, préparation à l'entretien et diagrammes : faits.
