@@ -1,0 +1,15 @@
+# Fins de ligne LF dans le dépôt et dans la copie de travail, quel que soit le poste
+# (core.autocrlf=true sous Windows réécrirait sinon les fichiers en CRLF) :
+# Prettier 3 attend LF, et les scripts shell ou les Dockerfiles en CRLF cassent sous Linux.
+* text=auto eol=lf
+
+# Scripts Windows : CRLF obligatoire (mvnw.cmd une fois le wrapper Maven généré)
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binaires : jamais convertis
+*.ico binary
+*.png binary
+*.jpg binary
+*.pdf binary
+*.jar binary
