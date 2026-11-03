@@ -12,6 +12,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthStore } from '../../core/auth/auth.store';
+import { FRENCH_PAGINATOR } from '../../core/i18n/french-paginator-intl';
 import { navigationFor } from './navigation';
 
 /** Largeur sous laquelle la barre latérale devient un tiroir (architecture frontend §7). */
@@ -35,6 +36,8 @@ const COMPACT_LAYOUT = '(max-width: 959.98px)';
     MatSidenavModule,
     MatToolbarModule,
   ],
+  // Paginateurs en français dans toutes les listes des espaces connectés
+  providers: [FRENCH_PAGINATOR],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a class="skip-link" href="#main-content" i18n>Aller au contenu</a>

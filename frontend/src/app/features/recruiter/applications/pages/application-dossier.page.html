@@ -22,8 +22,9 @@
         <p class="headline">{{ d.candidate.headline }}</p>
       }
       <p class="sub">
-        <span i18n>Candidature à</span>
-        <a [routerLink]="['/recruiter/jobs', d.job.id]">{{ d.job.title }}</a>
+        <span i18n>Candidature à</span>&ngsp;<a [routerLink]="['/recruiter/jobs', d.job.id]">{{
+          d.job.title
+        }}</a>
         · <span i18n>reçue le {{ d.submittedAt | date: 'd MMMM y' }}</span>
       </p>
     </div>

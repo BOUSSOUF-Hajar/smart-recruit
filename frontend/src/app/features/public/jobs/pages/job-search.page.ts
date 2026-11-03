@@ -16,6 +16,7 @@ import {
   WORK_MODE_LABELS,
   optionsOf,
 } from '../../../../shared/models/job';
+import { FRENCH_PAGINATOR } from '../../../../core/i18n/french-paginator-intl';
 import { EmptyState } from '../../../../shared/ui/empty-state/empty-state';
 import { JobCard } from '../components/job-card';
 import { JobCard as JobCardModel, searchParams } from '../data-access/public-jobs.models';
@@ -37,6 +38,7 @@ import { JobCard as JobCardModel, searchParams } from '../data-access/public-job
     EmptyState,
     JobCard,
   ],
+  providers: [FRENCH_PAGINATOR],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <h1 i18n>Offres d'emploi</h1>
