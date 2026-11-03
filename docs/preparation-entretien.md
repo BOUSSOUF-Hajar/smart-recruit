@@ -33,7 +33,7 @@ Mode d'emploi : savoir dire le pitch sans notes, puis être capable de répondre
   - le score de matching est calculé par une formule et non par le LLM, donc reproductible et insensible aux CV piégés ([ADR-008](adr/008-score-par-formule.md)) ;
   - les frontières entre modules sont vérifiées par un test ([ADR-001](adr/001-monolithe-modulaire.md)) ;
   - l'isolation entre entreprises est garantie côté serveur par l'entreprise du token, avec un 404 hors périmètre.
-- **Les chiffres** : 325 tests unitaires et 218 d'intégration sur un vrai PostgreSQL, 94,9 % de couverture des services, recherche d'offres en 20 ms au p95 sur 2 000 offres, tableaux de bord en 15 ms sur 10 000 candidatures.
+- **Les chiffres** : 325 tests unitaires et 225 d'intégration sur un vrai PostgreSQL, 95 % de couverture des services, recherche d'offres en 20 ms au p95 sur 2 000 offres, tableaux de bord en 15 ms sur 10 000 candidatures.
 - **Ce qui reste à faire, dit honnêtement** : voir la [section 15](#15-points-faibles-et-ce-que-je-ferais-autrement).
 
 ## 2. Organisation et méthode
@@ -296,6 +296,8 @@ Mode d'emploi : savoir dire le pitch sans notes, puis être capable de répondre
 
 **« Comment gères-tu les fuseaux horaires ? »** Stockage en UTC, transport en ISO 8601 avec décalage, affichage dans le fuseau du navigateur. Casablanca est un bon cas de test : son décalage change, exactement le cas où stocker des heures locales casse. — [US-35](stories/US-35.md)
 
+**« Pourquoi ne pas avoir traduit le paginateur dans la configuration globale ? »** Parce que je l'ai mesuré : `MatPaginatorIntl` importé dans `app.config` faisait entrer tout le paginateur dans le bundle initial, 185 ko de plus pour un visiteur qui ne voit peut-être aucune liste. Fourni par le gabarit des espaces connectés, chargé à la demande, il a le même effet sans coût au démarrage. — [US-58](stories/US-58.md)
+
 ## 12. Tests et qualité
 
 **« Pourquoi Testcontainers plutôt que H2 ? »** Un test sur H2 prouve que le code marche sur H2. Le projet utilise `uuidv7()`, `unaccent`, `tsvector`, JSONB, des index partiels et des déclencheurs : seul un vrai PostgreSQL 18 les valide. — [US-02](stories/US-02.md)
@@ -319,6 +321,8 @@ Mode d'emploi : savoir dire le pitch sans notes, puis être capable de répondre
 **« Un test d'intégration est instable : que fais-tu ? »** Je le corrige ou je le mets en quarantaine immédiatement, jamais en relançant jusqu'au vert : une pipeline rouge au hasard apprend à l'ignorer. — [US-05](stories/US-05.md)
 
 **« As-tu trouvé des bugs grâce aux tests ? »** Oui : un test qui enchaînait déconnexion puis renouvellement depuis un second appareil a montré qu'on fermait à tort toutes les sessions. Corrigé par la migration V8 (cause de révocation) ; le cas est désormais un critère. — [US-08](stories/US-08.md)
+
+**« Et des défauts qu'aucun test ne voyait ? »** Oui, en prenant les captures du README : un paginateur resté en anglais sur toutes les listes et une espace manquante dans le dossier de candidature. Les tests vérifient ce qu'on a pensé à vérifier ; regarder l'application comme un visiteur trouve le reste. Les captures sont prises par un script Playwright, donc refaites en une commande. — [US-58](stories/US-58.md)
 
 ## 13. Industrialisation
 

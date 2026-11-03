@@ -312,14 +312,15 @@ Les trois dernières phases rendent la plateforme administrable, la font tourner
 
 **Critère de fin** : dépôt public relu de bout en bout. **Jalon J5** : projet présentable.
 
-**Avancement (en cours)** :
+**Avancement (en revue)** :
 
 - Faits : README restructuré selon les rubriques d'US-58 ; 12 fiches ADR ([docs/adr/](adr/README.md)) ; [préparation à l'entretien](preparation-entretien.md) ; 7 diagrammes perdus redessinés en Mermaid. La relecture de `docs/` contre le code a aussi révélé l'absence de springdoc, désormais ajouté.
 - Vérifié par la CI (2 novembre 2026, premier push sur GitHub) : springdoc, tests, build et Playwright sur la pile `docker compose`.
 - Pipeline entièrement verte sur `main` le 3 novembre 2026, après la fusion de la branche qui corrige les vulnérabilités trouvées par l'analyse des images ([US-54](stories/US-54.md) §4) : jalon J4.
-- À faire : captures d'écran ; relecture finale du dépôt (jalon J5).
+- Captures d'écran faites le 3 novembre 2026, par un script Playwright (`npm run screenshots`) ; elles ont révélé deux défauts d'affichage, corrigés (paginateurs en anglais, espace manquante).
+- À faire : relecture finale du dépôt par toi, puis jalon J5.
 
-Sur le poste de développement, le backend est désormais vérifié aussi en local (3 novembre 2026 : `./mvnw verify` et SpotBugs verts, JDK 25 installé) ; le frontend et la pile Docker complète restent vérifiés par la CI seule, la connexion (moins de 20 Ko/s) ne permettant pas de télécharger les images et `node_modules` ([US-58](stories/US-58.md) §5).
+Sur le poste de développement, le 3 novembre 2026, backend et frontend sont vérifiés aussi en local : `./mvnw verify`, SpotBugs, lint, formatage, Vitest et build verts (JDK 25 et Node 24.22 installés à part). Seuls la pile `docker compose` complète et `npm run e2e` restent vérifiés par la CI seule ([US-58](stories/US-58.md) §5).
 
 ## 7. Jalons
 

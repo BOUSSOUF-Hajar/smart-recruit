@@ -112,7 +112,7 @@ Les 58 stories se répartissent en 10 épopées ; la colonne Statut te sert de s
 | US-55 | Pipeline CI/CD complète | EP-10 | MUST | 5 | US-05, US-54 | En revue |
 | US-56 | Données de démonstration | EP-10 | MUST | 3 | US-42 | En revue |
 | US-57 | Tests de bout en bout | EP-10 | SHOULD | 5 | US-32 | En revue |
-| US-58 | README et documentation | EP-10 | MUST | 3 | US-56 | En cours |
+| US-58 | README et documentation | EP-10 | MUST | 3 | US-56 | En revue |
 
 Les entreprises et catégories nécessaires aux premières offres sont créées par une migration de données initiales (US-02), ce qui permet de développer les offres avant l'écran d'administration.
 

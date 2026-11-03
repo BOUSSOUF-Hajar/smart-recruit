@@ -21,13 +21,13 @@ Il complète le [README](../README.md), qui présente le projet, et la [roadmap]
 
 | Élément | État |
 | --- | --- |
-| Phases 1 à 11 (57 stories sur 58) | Livrées |
-| Phase 12, US-58 (documentation) | En cours : il manque les captures d'écran |
+| Phases 1 à 12 (58 stories) | Livrées, « En revue » : à relire puis passer à « Terminé » |
 | Dépôt | Public : https://github.com/BOUSSOUF-Hajar/smart-recruit |
 | CI (GitHub Actions) | Entièrement verte sur `main` le 3 novembre 2026 (6 jobs) : **jalon J4 atteint** |
 | Backend sur le poste | `./mvnw verify` et SpotBugs verts le 3 novembre 2026 (325 tests unitaires, 225 d'intégration) |
-| Frontend sur le poste | Pas encore vérifié : `frontend/node_modules` n'est pas installé |
-| Pile Docker complète sur le poste | Pas encore lancée : images trop lourdes pour la connexion actuelle ; la CI la lance à chaque push |
+| Frontend sur le poste | Lint, formatage, 160 tests Vitest et build verts le 3 novembre 2026 (Node 24.22.2) |
+| Captures d'écran | Faites (`docs/screenshots/`, README) ; à refaire avec `npm run screenshots` si l'interface change |
+| Pile Docker complète sur le poste | Pas encore lancée : images à télécharger ; la CI la lance à chaque push |
 | Banc d'essai de l'IA | Pas exécuté : modèle `qwen3.5:9b` provisoire, image Ollama sur `latest` |
 
 ## 2. Préparer le poste
@@ -38,7 +38,7 @@ Il complète le [README](../README.md), qui présente le projet, et la [roadmap]
 | --- | --- | --- |
 | Git | récente | Déjà configuré : `BOUSSOUF-Hajar` |
 | JDK | **25** | Installé dans `%USERPROFILE%\.jdks\jdk-25.0.5+8` (Temurin 25.0.5) |
-| Node.js | 24 LTS (ou 22.22.3 et plus) | Pour le frontend et Playwright |
+| Node.js | 24 LTS, **24.15 ou plus** (ou 22.22.3 et plus) | Le Node 24.14 installé est trop ancien ; Node 24.22.2 est installé à part dans `%USERPROFILE%\.nodes\node-v24.22.2-win-x64` |
 | Docker Desktop | 28 ou plus | À démarrer avant les tests d'intégration et `docker compose` |
 | Maven | inutile | Le wrapper `./mvnw` (ou `mvnw.cmd`) télécharge Maven 3.9.14 tout seul |
 
@@ -55,6 +55,17 @@ java -version   # doit afficher 25.0.5
 ```
 
 Pour toujours : Paramètres Windows → « Modifier les variables d'environnement système » → Variables d'environnement. Mettre `JAVA_HOME` à `C:\Users\HP\.jdks\jdk-25.0.5+8`, puis placer `%JAVA_HOME%\bin` en tête de `Path`. Rouvrir le terminal et VS Code ensuite.
+
+### Rendre Node 24.22 visible
+
+Même principe : `node -v` doit afficher 24.15 ou plus.
+
+```bash
+export PATH="$USERPROFILE/.nodes/node-v24.22.2-win-x64:$PATH"
+node -v   # v24.22.2
+```
+
+Pour toujours : ajouter `C:\Users\HP\.nodes\node-v24.22.2-win-x64` en tête de `Path`, ou mettre à jour le Node installé depuis https://nodejs.org (version LTS).
 
 ### Fichier `.env`
 
@@ -100,6 +111,8 @@ Puis ouvrir http://localhost:8080. Comptes de démonstration, mot de passe commu
 docker compose -f docker-compose.dev.yml up -d postgres   # PostgreSQL 18 sur localhost:5432
 
 cd backend
+export DB_PASSWORD=local-demo-only-db-password              # celui de .env, que la base Docker a pris
+export AI_ENABLED=false                                     # sans Ollama
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,demo   # http://localhost:8080
 
 cd frontend                                                 # autre terminal
@@ -164,25 +177,32 @@ Règles du code à ne pas casser :
 
 ### 6.1 Relire et clore les stories
 
-Le jalon J4 est atteint (CI verte sur `main` le 3 novembre 2026, noté dans la roadmap). Les stories US-01 à US-57 sont encore « En revue » dans `docs/user-stories.md` : les relire, puis passer leur statut à « Terminé ». Les notes de `docs/stories/` donnent, pour chacune, les critères et leur preuve.
+Le jalon J4 est atteint (CI verte sur `main` le 3 novembre 2026, noté dans la roadmap). Les 58 stories sont « En revue » dans `docs/user-stories.md` : les relire, puis passer leur statut à « Terminé ». Les notes de `docs/stories/` donnent, pour chacune, les critères et leur preuve.
 
-### 6.2 Captures d'écran (fin d'US-58)
+### 6.2 Refaire les captures d'écran
 
-Il faut l'application lancée avec les données de démonstration (section 3). Si la connexion empêche `docker compose up --build`, le mode développement suffit : PostgreSQL déjà téléchargé, backend avec `dev,demo`, frontend avec `npm start` ; seul `npm ci` est à télécharger.
+Les cinq captures du README sont dans `docs/screenshots/`. Elles sont prises par un script ([frontend/e2e/captures/](../frontend/e2e/captures/)) : après un changement d'interface, on les refait en une commande.
 
-1. Créer `docs/screenshots/`.
-2. Prendre les écrans dans cet ordre (largeur de fenêtre d'environ 1440 px, PNG) :
-   1. dossier de candidature côté recruteur (profil, CV, historique, aide IA) : `dossier-candidature.png` ;
-   2. liste filtrée des candidatures : `candidatures.png` ;
-   3. tableau de bord recruteur : `tableau-de-bord-recruteur.png` ;
-   4. profil et candidatures d'un candidat : `espace-candidat.png` ;
-   5. tableau de bord et journal d'audit de l'administrateur : `administration.png`.
-3. Réduire leur poids si besoin (moins de 500 Ko chacune).
-4. README, rubrique « Captures d'écran » : remplacer « À venir » par les images, par exemple `![Dossier de candidature](docs/screenshots/dossier-candidature.png)`.
-5. US-58 : passer le critère « Captures » à « Fait », puis la story à « Terminé » dans `docs/user-stories.md` et la note.
-6. Roadmap, phase 12 : noter le jalon J5 après une relecture complète du dépôt.
+1. Lancer l'application avec les données de démonstration, au choix :
+   - `docker compose up --build`, puis l'URL par défaut (http://localhost:8080) ;
+   - ou le mode développement (section 3), puis `E2E_BASE_URL=http://localhost:4200`. Penser à passer au backend le mot de passe de base de `.env` : `export DB_PASSWORD=local-demo-only-db-password` (et `AI_ENABLED=false` sans Ollama).
+2. Dans `frontend/` :
 
-### 6.3 Banc d'essai de l'IA
+   ```bash
+   # Chrome installé, pour ne pas télécharger le Chromium de Playwright
+   export PW_CHROMIUM_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe"
+   E2E_BASE_URL=http://localhost:4200 npm run screenshots
+   ```
+
+3. Regarder les images avant de commiter : une capture montre parfois un défaut que les tests ne voient pas.
+
+Pour ajouter un écran : une ligne `capture(page, 'nom')` dans `readme.screens.ts`, puis l'image dans la rubrique « Captures d'écran » du README.
+
+### 6.3 Jalon J5
+
+Après la relecture complète du dépôt (section 6.1), noter le jalon J5 dans la roadmap (§7 et phase 12), le README et `CLAUDE.md` §7.
+
+### 6.4 Banc d'essai de l'IA
 
 Le protocole complet est dans [ai-model-benchmark.md](ai-model-benchmark.md) §2. Il demande environ 10 Go de téléchargements et 16 Go de RAM recommandés, ce qui dépasse le poste actuel (7,8 Go alloués à Docker) : une autre machine ou une meilleure connexion sera nécessaire.
 
@@ -195,11 +215,11 @@ Le protocole complet est dans [ai-model-benchmark.md](ai-model-benchmark.md) §2
    - l'image Ollama : remplacer `latest` par la version mesurée dans `docker-compose.yml` (`OLLAMA_VERSION`) et `docker-compose.dev.yml`.
 6. Mettre à jour la roadmap §10, le README (rubrique IA, état du projet) et `CLAUDE.md` §7.
 
-### 6.4 Recommandé : protéger `main`
+### 6.5 Recommandé : protéger `main`
 
 Sur GitHub : Settings → Branches → Add branch ruleset, cible `main`. Cocher « Require a pull request before merging » et « Require status checks to pass », puis choisir les jobs de la CI. Ainsi, rien n'arrive sur `main` sans CI verte. C'est prévu par US-05.
 
-### 6.5 Facultatif (phase 12)
+### 6.6 Facultatif (phase 12)
 
 - Courte vidéo de démonstration (parcours candidat puis recruteur, deux à trois minutes).
 - Ligne de CV et description LinkedIn du projet.
@@ -218,6 +238,8 @@ Sur GitHub : Settings → Branches → Add branch ruleset, cible `main`. Cocher 
 | Symptôme | Cause | Solution |
 | --- | --- | --- |
 | `./mvnw verify` : « release version 25 not supported » ou erreur avant compilation | Mauvais JDK actif | Section 2, « Rendre le JDK 25 visible » |
+| `ng` refuse de démarrer : « Node.js version v24.14.0 detected. The Angular CLI requires a minimum Node.js version of … v24.15.0 » | Node trop ancien (minimum 24.15) | Section 2, « Rendre Node 24.22 visible » |
+| Backend en `dev` : « password authentication failed for user smartrecruit » | La base Docker a pris le mot de passe de `.env`, le backend attend celui par défaut | `export DB_PASSWORD=…` avec la valeur de `.env` avant `./mvnw spring-boot:run` |
 | Tests `*IT` : « Could not find a valid Docker environment » | Docker Desktop arrêté | Le démarrer et attendre qu'il soit prêt (`docker info`) |
 | Tests `*IT` bloqués sur le téléchargement de `testcontainers/ryuk` | Image de nettoyage de Testcontainers absente, connexion lente | `export TESTCONTAINERS_RYUK_DISABLED=true` le temps du lancement, puis supprimer les conteneurs restants : `docker ps -a` |
 | Maven : « Could not transfer artifact … Read timed out » | Connexion lente | Relancer : Maven reprend où il en était ; `-Dmaven.wagon.http.retryHandler.count=5` aide |

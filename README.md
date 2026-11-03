@@ -62,7 +62,32 @@ Sous le capot :
 
 ## Captures d'écran
 
-*À venir* : les captures seront prises sur l'application lancée avec les données de démonstration, en commençant par le dossier de candidature du recruteur (profil, CV, historique, aide IA). Suivront la liste filtrée des candidatures, le tableau de bord recruteur, le profil et les candidatures d'un candidat, puis le tableau de bord et le journal d'audit de l'administrateur.
+Prises sur l'application avec les données de démonstration (`npm run screenshots` dans `frontend/`).
+
+**Dossier de candidature** (recruteur) : profil, CV figé au moment de la candidature, onglets historique, entretiens, assistance IA et notes.
+
+![Dossier de candidature](docs/screenshots/dossier-candidature.png)
+
+**Candidatures reçues**, filtrables par offre, statut, nom, période et compétence.
+
+![Liste des candidatures](docs/screenshots/candidatures.png)
+
+**Tableau de bord du recruteur** : indicateurs, offres par statut, entretiens à venir, entonnoir par offre.
+
+![Tableau de bord recruteur](docs/screenshots/tableau-de-bord-recruteur.png)
+
+<details>
+<summary>Espace candidat et administration</summary>
+
+**Espace candidat** : ses candidatures et leur statut.
+
+![Espace candidat](docs/screenshots/espace-candidat.png)
+
+**Administration** : état de l'assistance IA, comptes et activité de la plateforme.
+
+![Tableau de bord administrateur](docs/screenshots/administration.png)
+
+</details>
 
 ## Essayer en une commande
 
@@ -179,14 +204,14 @@ Le modèle par défaut, `qwen3.5:9b`, est **provisoire** : il sera choisi et ép
 
 | Mesure | Valeur |
 | --- | --- |
-| Tests backend | 325 tests unitaires, 218 tests d'intégration sur un vrai PostgreSQL 18 (Testcontainers) |
-| Couverture des services et règles métier | 94,9 % (JaCoCo), seuil bloquant à 70 % |
-| Tests frontend | 156 tests Vitest, 4 parcours Playwright sur la pile réelle derrière Nginx |
+| Tests backend | 325 tests unitaires, 225 tests d'intégration sur un vrai PostgreSQL 18 (Testcontainers) |
+| Couverture des services et règles métier | 95,0 % (JaCoCo), seuil bloquant à 70 % |
+| Tests frontend | 160 tests Vitest, 5 parcours Playwright sur la pile réelle derrière Nginx |
 | Analyse statique | SpotBugs sans constat ; ESLint avec règles de frontières entre dossiers |
 | Recherche d'offres | p95 de 20,4 ms sur 2 000 offres ([US-25](docs/stories/US-25.md)) |
 | Tableaux de bord | 14,47 ms sur 10 000 candidatures ([US-44](docs/stories/US-44.md)) |
 
-Ces chiffres sont ceux de la phase 11 ; les tests ajoutés en phase 12 (documentation de l'API) ne sont pas encore comptés.
+Chiffres mesurés le 3 novembre 2026, phase 12 comprise.
 
 Quelques tests représentatifs :
 
@@ -224,7 +249,7 @@ Les douze fiches : [docs/adr/](docs/adr/README.md).
 ### Prérequis
 
 - JDK 25
-- Node.js 24 LTS (ou 22.22.3+)
+- Node.js 24 LTS, 24.15 ou plus (ou 22.22.3+)
 - Docker (Docker Desktop sous Windows et macOS) : base de développement et tests d'intégration
 
 Maven n'est pas nécessaire : le wrapper `./mvnw` (ou `mvnw.cmd` sous Windows) télécharge Maven 3.9.14 au premier lancement.
@@ -296,14 +321,13 @@ smart-recruit/
 
 ## État du projet
 
-Phases 1 à 11 livrées, en revue ; phase 12 (documentation et portfolio, US-58) en cours.
+Les 12 phases sont livrées et en revue : les 58 stories, dont US-58 (documentation et portfolio), terminée le 3 novembre 2026.
 
 **Jalon J4 atteint le 3 novembre 2026** : pipeline CI/CD entièrement verte sur `main`, avec les tests, le build, Playwright sur la pile `docker compose`, et la construction, l'analyse et la publication des images.
 
 Reste à vérifier ou à faire, sans le présenter comme acquis :
 
-- banc d'essai de l'IA, puis épinglage du modèle et de la version de l'image Ollama ;
-- captures d'écran.
+- banc d'essai de l'IA, puis épinglage du modèle et de la version de l'image Ollama.
 
 Détail et bilan de chaque phase : [docs/roadmap.md](docs/roadmap.md).
 
