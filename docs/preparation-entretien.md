@@ -33,7 +33,7 @@ Mode d'emploi : savoir dire le pitch sans notes, puis être capable de répondre
   - le score de matching est calculé par une formule et non par le LLM, donc reproductible et insensible aux CV piégés ([ADR-008](adr/008-score-par-formule.md)) ;
   - les frontières entre modules sont vérifiées par un test ([ADR-001](adr/001-monolithe-modulaire.md)) ;
   - l'isolation entre entreprises est garantie côté serveur par l'entreprise du token, avec un 404 hors périmètre.
-- **Les chiffres** : 325 tests unitaires et 225 d'intégration sur un vrai PostgreSQL, 95 % de couverture des services, recherche d'offres en 20 ms au p95 sur 2 000 offres, tableaux de bord en 15 ms sur 10 000 candidatures.
+- **Les chiffres** : 326 tests unitaires et 225 d'intégration sur un vrai PostgreSQL, 95 % de couverture des services, recherche d'offres en 20 ms au p95 sur 2 000 offres, tableaux de bord en 15 ms sur 10 000 candidatures.
 - **Ce qui reste à faire, dit honnêtement** : voir la [section 15](#15-points-faibles-et-ce-que-je-ferais-autrement).
 
 ## 2. Organisation et méthode
@@ -272,9 +272,13 @@ Mode d'emploi : savoir dire le pitch sans notes, puis être capable de répondre
 
 **« Pourquoi pas Spring AI ? »** Une seconde abstraction au-dessus d'`AIService` qui masque l'appel réel. Un appel `RestClient` avec schéma JSON imposé reste lisible et se teste contre un faux serveur HTTP. Spring AI est une bonne évolution, présentée comme telle. — [ADR-010](adr/010-ollama-restclient-aiservice.md)
 
-**« Comment as-tu choisi le modèle ? »** Par un banc d'essai et non au jugé : 10 CV fictifs dont un piégé, extraction attendue écrite à la main, précision et rappel des compétences, temps, mémoire. Seuils : précision 0,85, rappel 0,80, moins de 120 s par CV. — [banc d'essai](ai-model-benchmark.md)
+**« Comment as-tu choisi le modèle ? »** Par un banc d'essai et non au jugé : 10 CV fictifs dont un piégé, extraction attendue écrite à la main, précision et rappel des compétences, temps par CV. Seuils : précision 0,85, rappel 0,80, moins de 120 s par CV. Sept mesures sur GitHub Actions (4 vCPU, sans GPU) : `qwen3.5:4b` sans raisonnement l'emporte avec 0,98 de précision, 0,93 de rappel et 94 s par CV. — [banc d'essai](ai-model-benchmark.md)
 
-**« Pourquoi pas le plus gros modèle ? »** L'application doit tourner sans GPU. Un modèle de 7 à 9 milliards de paramètres répond en dizaines de secondes sur CPU ; quatre fois plus gros, il dépasserait le délai. — [banc d'essai](ai-model-benchmark.md)
+**« Un modèle précis et rapide a-t-il été écarté ? »** Oui, deux : `llama3.2:3b` et `gemma3:4b` avaient de bons scores et répondaient en moins de 70 s, mais ils ont extrait Kafka et Kubernetes du CV piégé, sur l'ordre d'un texte caché. Un candidat pourrait ainsi gonfler son profil : la sécurité passe avant la vitesse. — [banc d'essai](ai-model-benchmark.md)
+
+**« Pourquoi couper le raisonnement du modèle ? »** `qwen3.5` « réfléchit » avant de répondre : sur CPU, aucun CV n'aboutissait en 300 s. Pour une extraction guidée par un schéma JSON, la réflexion n'apporte rien de mesurable : sans elle, la précision reste à 0,98. — [banc d'essai](ai-model-benchmark.md)
+
+**« Pourquoi pas le plus gros modèle ? »** L'application doit tourner sans GPU. Mesuré : `qwen3.5:9b` est à peine plus précis que `qwen3.5:4b` (1,00 contre 0,98, même rappel) mais 70 % plus lent, au-delà de 120 s sur chaque CV. — [banc d'essai](ai-model-benchmark.md)
 
 ## 11. Frontend Angular
 

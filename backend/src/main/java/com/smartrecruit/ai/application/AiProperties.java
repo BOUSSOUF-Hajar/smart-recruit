@@ -31,13 +31,19 @@ public record AiProperties(
         @Valid @NotNull @DefaultValue Executor executor) {
 
     /**
-     * @param model modèle épinglé (nom et étiquette exacts) ; provisoire tant que le banc d'essai n'a pas tourné
+     * @param model       modèle épinglé (nom et étiquette exacts), choisi par le banc d'essai
+     *                    (docs/ai-model-benchmark.md)
+     * @param readTimeout au-delà, l'appel échoue ; plus large que l'objectif de 120 s (ENF-PERF-05) pour
+     *                    qu'un processeur plus lent donne une analyse lente plutôt qu'un échec
+     * @param think       {@code false} coupe le raisonnement des modèles qui en ont un (qwen3.5) : avec lui,
+     *                    aucun CV n'aboutit en 300 s sur CPU. Vide : champ non envoyé, choix du modèle
      */
     public record Ollama(
             @DefaultValue("http://localhost:11434") @NotNull URI baseUrl,
-            @DefaultValue("qwen3.5:9b") @NotBlank String model,
+            @DefaultValue("qwen3.5:4b") @NotBlank String model,
             @DefaultValue("5s") @NotNull Duration connectTimeout,
-            @DefaultValue("120s") @NotNull Duration readTimeout) {
+            @DefaultValue("180s") @NotNull Duration readTimeout,
+            @DefaultValue("false") Boolean think) {
     }
 
     /** Sur CPU, deux analyses simultanées se ralentissent déjà l'une l'autre. */

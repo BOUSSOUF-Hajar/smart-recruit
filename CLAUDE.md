@@ -41,5 +41,5 @@ Profil `demo`, mot de passe commun `Demo-SmartRecruit-2026`.
 
 ## 7. Points en attente
 - Poste de développement : JDK 25 dans `%USERPROFILE%\.jdks\jdk-25.0.5+8` et Node 24.22.2 dans `%USERPROFILE%\.nodes\node-v24.22.2-win-x64` (le Node 24.14 installé est sous le minimum 24.15) ; backend et frontend vérifiés en local le 3 novembre 2026 ; pile `docker compose` et `npm run e2e` vérifiés par la CI seule.
-- Exécuter le banc d'essai IA, puis épingler le modèle et la version de l'image Ollama.
+- IA : banc d'essai exécuté le 4 novembre 2026 sur GitHub Actions (`.github/workflows/ai-benchmark.yml`) ; `qwen3.5:4b` avec `think: false` et `ollama/ollama:0.40.14` épinglés. Pas encore essayée de bout en bout sur le poste (2 cœurs, plus lent que le runner).
 - Les 58 stories sont « En revue » : à relire, puis passer à « Terminé » ; jalon J5 ensuite.

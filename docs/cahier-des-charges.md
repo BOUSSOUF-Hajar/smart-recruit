@@ -577,7 +577,7 @@ L'IA extrait et explique ; le backend calcule le score ; le recruteur décide. L
 
 - A1 — Service IA injoignable : tâche en FAILED, message « Analyse indisponible, réessayez plus tard ».
 - A2 — Réponse non conforme au schéma : une nouvelle tentative, puis FAILED.
-- A3 — Délai dépassé (120 s, configurable) : FAILED.
+- A3 — Délai dépassé (configurable ; 180 s depuis le banc d'essai, pour un objectif de 120 s) : FAILED.
 - A4 — CV déjà analysé dans cette version : le résultat existant est affiché, avec possibilité de relancer.
 
 ### F-AI-03 — Matching CV / offre (MUST)

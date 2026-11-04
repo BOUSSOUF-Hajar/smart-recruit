@@ -184,7 +184,8 @@ L'API appelle Ollama en HTTP avec un schéma JSON imposé ; le modèle n'est pas
 | Client | `RestClient` de Spring, appel direct à l'API de chat d'Ollama | Un seul appel HTTP, entièrement lisible et testable ; l'interface `AIService` assure déjà la portabilité |
 | Format de sortie | Schéma JSON passé dans le paramètre `format` | Ollama accepte un schéma JSON complet depuis sa version 0.5 et contraint le modèle à le respecter ([source](https://www.llmconfigurator.com/en/guides/llm-json-structured-output)) ; le backend revalide quand même |
 | Température | 0 pour l'extraction, faible pour l'explication | Résultats aussi reproductibles que possible |
-| Délai | 120 s, puis une seule nouvelle tentative | ENF-PERF-05 |
+| Raisonnement | Coupé (`think: false`) | Mesuré : avec lui, aucun CV n'aboutit en 300 s sur CPU |
+| Délai | Lecture limitée à 180 s pour un objectif de 120 s, puis une seule nouvelle tentative | ENF-PERF-05 ; marge fixée par le banc d'essai |
 | Parallélisme | Pool de 1 à 2 threads | Sur CPU, deux analyses simultanées se ralentissent l'une l'autre |
 | Prompts | Fichiers versionnés dans les ressources (`resume-extraction-v1`), version enregistrée avec chaque résultat | RG-27 |
 | Santé | Indicateur Actuator qui interroge Ollama | État visible par l'admin (US-46) |
@@ -203,6 +204,8 @@ Protocole :
 4. Mesurer : précision et rappel des compétences, exactitude des expériences, temps moyen, mémoire utilisée.
 5. Retenir le meilleur modèle qui atteint au moins 0,85 de précision et 0,80 de rappel sur les compétences en moins de 120 s par CV.
 6. Consigner les résultats dans `docs/ai-model-benchmark.md` et épingler la version exacte du modèle dans la configuration.
+
+**Résultat (4 novembre 2026)** : `qwen3.5:4b` sans raisonnement, image `ollama/ollama:0.40.14` ; précision 0,98, rappel 0,93, 94 s par CV sur 4 vCPU sans GPU. Le banc a tourné sur GitHub Actions et non sur le poste, dont la connexion ne permettait pas de télécharger les modèles ([détail](ai-model-benchmark.md)).
 
 Ce protocole est aussi un excellent sujet d'entretien : il montre que le choix d'un LLM se mesure au lieu de se deviner.
 

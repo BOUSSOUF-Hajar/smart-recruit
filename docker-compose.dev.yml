@@ -2,7 +2,7 @@
 # Démarrage : docker compose -f docker-compose.dev.yml up -d
 # L'application complète (frontend, backend, PostgreSQL, Ollama) : docker-compose.yml (phase 11).
 # IA (phase 8) : après le premier démarrage, télécharger le modèle une fois :
-#   docker compose -f docker-compose.dev.yml exec ollama ollama pull qwen3.5:9b   (environ 6,6 Go)
+#   docker compose -f docker-compose.dev.yml exec ollama ollama pull qwen3.5:4b   (environ 3,3 Go)
 name: smartrecruit-dev
 
 services:
@@ -24,7 +24,7 @@ services:
       retries: 10
 
   ollama:
-    image: ollama/ollama:latest   # à épingler sur une version précise avec le modèle (banc d'essai)
+    image: ollama/ollama:0.40.14   # version mesurée par le banc d'essai (docs/ai-model-benchmark.md)
     ports:
       - "11434:11434"          # publié en dev seulement ; le backend l'appelle sur localhost
     volumes:

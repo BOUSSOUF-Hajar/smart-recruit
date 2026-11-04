@@ -613,7 +613,7 @@ Désactiver un compte ou changer l'entreprise d'un recruteur incrémente sa vers
   "companies": { "active": 6, "disabled": 1 },
   "jobsByStatus": { "ARCHIVED": 1, "CLOSED": 4, "DRAFT": 2, "PUBLISHED": 9 },
   "applications": { "total": 310, "last30Days": 42 },
-  "ai": { "status": "AVAILABLE", "model": "qwen3.5:9b" }
+  "ai": { "status": "AVAILABLE", "model": "qwen3.5:4b" }
 }
 ```
 

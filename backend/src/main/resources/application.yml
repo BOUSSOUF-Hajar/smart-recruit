@@ -67,8 +67,9 @@ smartrecruit:
     provider: ollama
     ollama:
       base-url: ${AI_OLLAMA_URL:http://localhost:11434}
-      model: ${AI_MODEL:qwen3.5:9b}       # provisoire : épinglé après le banc d'essai (docs/ai-model-benchmark.md)
-      read-timeout: 120s
+      model: ${AI_MODEL:qwen3.5:4b}       # choisi par le banc d'essai (docs/ai-model-benchmark.md)
+      read-timeout: 180s                  # objectif 120 s (ENF-PERF-05), marge pour les processeurs plus lents
+      think: ${AI_THINK:false}            # raisonnement coupé : sinon aucun CV n'aboutit en 300 s sur CPU
   # --- Phase 3 : sécurité -------------------------------------------------
   security:
     jwt:

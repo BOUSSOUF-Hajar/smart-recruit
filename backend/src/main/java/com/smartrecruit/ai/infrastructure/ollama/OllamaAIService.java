@@ -20,14 +20,16 @@ import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Adaptateur Ollama (architecture §6) : {@code POST /api/chat}, sans flux, schéma JSON imposé dans
- * {@code format}, température 0. Le texte du CV est passé comme donnée délimitée, jamais comme
- * consigne ; le modèle n'a accès à aucun outil.
+ * {@code format}, température 0, raisonnement coupé si {@code think=false} (banc d'essai : sinon trop lent
+ * sur CPU). Le texte du CV est passé comme donnée délimitée, jamais comme consigne ; le modèle n'a accès
+ * à aucun outil.
  * <p>
  * Réponse désérialisée en record puis validée ; non conforme → une nouvelle tentative, puis
  * {@code AI_INVALID_RESPONSE}. Injoignable ou délai dépassé → {@code AI_UNAVAILABLE}. Les champs en
@@ -40,14 +42,17 @@ public class OllamaAIService implements AIService {
 
     private final RestClient client;
     private final String model;
+    private final Boolean think;
     private final PromptLibrary prompts;
     private final JsonMapper json;
     private final Validator validator;
 
-    public OllamaAIService(RestClient client, String model, PromptLibrary prompts, JsonMapper json,
+    /** @param think {@code null} : champ absent de la requête, le modèle décide */
+    public OllamaAIService(RestClient client, String model, Boolean think, PromptLibrary prompts, JsonMapper json,
                            Validator validator) {
         this.client = client;
         this.model = model;
+        this.think = think;
         this.prompts = prompts;
         // Champs inconnus ignorés : seul ce que le schéma décrit est lu
         this.json = json.rebuild().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
@@ -71,14 +76,17 @@ public class OllamaAIService implements AIService {
     }
 
     private <T> T chat(String promptVersion, String userContent, Class<T> type) {
-        Map<String, Object> body = Map.of(
-                "model", model,
-                "stream", false,
-                "format", prompts.schema(promptVersion),
-                "options", Map.of("temperature", 0),
-                "messages", List.of(
-                        Map.of("role", "system", "content", prompts.instructions(promptVersion)),
-                        Map.of("role", "user", "content", userContent)));
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("model", model);
+        body.put("stream", false);
+        body.put("format", prompts.schema(promptVersion));
+        body.put("options", Map.of("temperature", 0));
+        if (think != null) {
+            body.put("think", think);
+        }
+        body.put("messages", List.of(
+                Map.of("role", "system", "content", prompts.instructions(promptVersion)),
+                Map.of("role", "user", "content", userContent)));
         String lastProblem = "";
         for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
             String content = call(body);

@@ -286,8 +286,8 @@ Les événements sont des `record` dans le paquet `api` du module émetteur ; il
 
 | Élément | Implémentation |
 | --- | --- |
-| Client | `RestClient` dédié, URL de base `AI_OLLAMA_URL`, délai de connexion 5 s, délai de lecture 120 s |
-| Appel | `POST /api/chat`, `stream: false`, `format` = schéma JSON chargé depuis `prompts/`, `options.temperature` = 0 |
+| Client | `RestClient` dédié, URL de base `AI_OLLAMA_URL`, délai de connexion 5 s, délai de lecture 180 s (objectif 120 s, marge mesurée par le banc d'essai) |
+| Appel | `POST /api/chat`, `stream: false`, `format` = schéma JSON chargé depuis `prompts/`, `options.temperature` = 0, `think: false` (propriété `smartrecruit.ai.ollama.think`, variable `AI_THINK`) : sans cela, `qwen3.5` raisonne au-delà de 300 s par CV |
 | Réponse | Désérialisée en record (`ResumeExtraction`), puis validée par Bean Validation ; non conforme → une nouvelle tentative, puis `AI_INVALID_RESPONSE` |
 | Prompts | Fichiers texte versionnés ; le nom de fichier donne la version enregistrée avec le résultat |
 | Santé | `OllamaHealthIndicator` interroge la liste des modèles et vérifie que le modèle configuré est présent |

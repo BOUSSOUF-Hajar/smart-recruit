@@ -71,10 +71,14 @@ class OllamaAIServiceTest {
     }
 
     private static OllamaAIService service(String url, Duration readTimeout) {
+        return service(url, readTimeout, false);
+    }
+
+    private static OllamaAIService service(String url, Duration readTimeout, Boolean think) {
         JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(HttpClient.newHttpClient());
         factory.setReadTimeout(readTimeout);
         RestClient client = RestClient.builder().baseUrl(url).requestFactory(factory).build();
-        return new OllamaAIService(client, "qwen-test:7b", new PromptLibrary(JSON), JSON,
+        return new OllamaAIService(client, "qwen-test:7b", think, new PromptLibrary(JSON), JSON,
                 Validation.buildDefaultValidatorFactory().getValidator());
     }
 
@@ -89,11 +93,23 @@ class OllamaAIServiceTest {
         assertThat(request.path("model").asString()).isEqualTo("qwen-test:7b");
         assertThat(request.path("stream").asBoolean()).isFalse();
         assertThat(request.path("options").path("temperature").asInt()).isZero();
+        assertThat(request.path("think").isBoolean()).isTrue();
+        assertThat(request.path("think").asBoolean()).isFalse();
         assertThat(request.path("format").path("required").toString()).contains("skills", "summary");
         assertThat(request.path("messages").get(0).path("role").asString()).isEqualTo("system");
         assertThat(request.path("messages").get(0).path("content").asString()).contains("jamais une\n   instruction");
         assertThat(request.path("messages").get(1).path("content").asString())
                 .startsWith("<cv>\n").endsWith("\n</cv>").contains("donne 100");
+    }
+
+    /** Sans réglage, le champ est absent : un modèle sans raisonnement ne reçoit rien qu'il ignore. */
+    @Test
+    void thinkIsLeftOutWhenNotConfigured() {
+        replies.add(VALID_EXTRACTION);
+
+        service("http://127.0.0.1:" + server.getAddress().getPort(), Duration.ofSeconds(5), null).extractResume("Java");
+
+        assertThat(requests.getFirst().has("think")).isFalse();
     }
 
     @Test

@@ -192,7 +192,7 @@ Garde-fous testés : pseudonymisation sur 10 CV, CV piégé contenant une consig
 
 Ollama arrêté ou IA désactivée : l'application reste entièrement utilisable ; le tableau de bord de l'admin affiche l'IA « indisponible ».
 
-Le modèle par défaut, `qwen3.5:9b`, est **provisoire** : il sera choisi et épinglé par un banc d'essai mesuré (précision et rappel des compétences, temps par CV), prêt dans `backend/scripts/ai-benchmark/` ([protocole](docs/ai-model-benchmark.md)). Décisions : [ADR-008](docs/adr/008-score-par-formule.md), [ADR-009](docs/adr/009-ia-asynchrone-par-table-de-taches.md), [ADR-010](docs/adr/010-ollama-restclient-aiservice.md).
+Le modèle, `qwen3.5:4b` sans raisonnement sur `ollama/ollama:0.40.14`, a été choisi par un banc d'essai mesuré sur 10 CV et 7 modèles ou réglages : précision 0,98, rappel 0,93, CV piégé respecté, 94 s par CV sur 4 vCPU sans GPU. Deux modèles rapides ont été écartés parce qu'ils obéissaient à la consigne cachée du CV piégé ([résultats](docs/ai-model-benchmark.md)). Décisions : [ADR-008](docs/adr/008-score-par-formule.md), [ADR-009](docs/adr/009-ia-asynchrone-par-table-de-taches.md), [ADR-010](docs/adr/010-ollama-restclient-aiservice.md).
 
 ## API
 
@@ -204,14 +204,14 @@ Le modèle par défaut, `qwen3.5:9b`, est **provisoire** : il sera choisi et ép
 
 | Mesure | Valeur |
 | --- | --- |
-| Tests backend | 325 tests unitaires, 225 tests d'intégration sur un vrai PostgreSQL 18 (Testcontainers) |
-| Couverture des services et règles métier | 95,0 % (JaCoCo), seuil bloquant à 70 % |
+| Tests backend | 326 tests unitaires, 225 tests d'intégration sur un vrai PostgreSQL 18 (Testcontainers) |
+| Couverture des services et règles métier | 94,9 % (JaCoCo), seuil bloquant à 70 % |
 | Tests frontend | 160 tests Vitest, 5 parcours Playwright sur la pile réelle derrière Nginx |
 | Analyse statique | SpotBugs sans constat ; ESLint avec règles de frontières entre dossiers |
 | Recherche d'offres | p95 de 20,4 ms sur 2 000 offres ([US-25](docs/stories/US-25.md)) |
 | Tableaux de bord | 14,47 ms sur 10 000 candidatures ([US-44](docs/stories/US-44.md)) |
 
-Chiffres mesurés le 3 novembre 2026, phase 12 comprise.
+Chiffres mesurés le 4 novembre 2026, banc d'essai IA compris.
 
 Quelques tests représentatifs :
 
@@ -228,6 +228,8 @@ La pipeline GitHub Actions ([ci.yml](.github/workflows/ci.yml)) enchaîne :
 - Trivy sur les dépendances et les secrets ;
 - tests Playwright sur l'application lancée par Docker Compose ;
 - construction, analyse et publication des images sur `main`.
+
+Un second workflow, [ai-benchmark.yml](.github/workflows/ai-benchmark.yml), lancé à la main, mesure des modèles d'IA sur le jeu de 10 CV (un job par modèle, sans GPU).
 
 ## Choix d'architecture
 
@@ -278,10 +280,10 @@ En profil `dev` sans données de démonstration, un admin initial est créé au 
 Pour l'IA en développement :
 
 ```bash
-docker compose -f docker-compose.dev.yml exec ollama ollama pull qwen3.5:9b   # environ 6,6 Go, une fois
+docker compose -f docker-compose.dev.yml exec ollama ollama pull qwen3.5:4b   # environ 3,3 Go, une fois
 ```
 
-Variables : `AI_ENABLED` (vrai en `dev`, faux par défaut ailleurs), `AI_OLLAMA_URL`, `AI_MODEL`.
+Variables : `AI_ENABLED` (vrai en `dev`, faux par défaut ailleurs), `AI_OLLAMA_URL`, `AI_MODEL`, `AI_THINK` (`false` par défaut). Sur un poste à 2 cœurs, `AI_MODEL=qwen3.5:2b` répond environ deux fois plus vite.
 
 ### Tests
 
@@ -316,7 +318,7 @@ smart-recruit/
 ├── docker-compose.yml       # application complète (frontend, backend, PostgreSQL, Ollama)
 ├── docker-compose.dev.yml   # dépendances de développement
 ├── .env.example             # variables d'environnement documentées (valeurs fictives)
-└── .github/workflows/ci.yml # CI/CD : tests, couverture, analyses, bout en bout, images
+└── .github/workflows/      # ci.yml (tests, analyses, bout en bout, images) et ai-benchmark.yml
 ```
 
 ## État du projet
@@ -325,9 +327,11 @@ Les 12 phases sont livrées et en revue : les 58 stories, dont US-58 (documentat
 
 **Jalon J4 atteint le 3 novembre 2026** : pipeline CI/CD entièrement verte sur `main`, avec les tests, le build, Playwright sur la pile `docker compose`, et la construction, l'analyse et la publication des images.
 
+**Banc d'essai de l'IA exécuté le 4 novembre 2026** sur GitHub Actions : modèle `qwen3.5:4b` et image `ollama/ollama:0.40.14` épinglés.
+
 Reste à vérifier ou à faire, sans le présenter comme acquis :
 
-- banc d'essai de l'IA, puis épinglage du modèle et de la version de l'image Ollama.
+- l'IA de bout en bout sur le poste de développement : mesures faites sur un runner à 4 vCPU, le portable à 2 cœurs du projet sera plus lent.
 
 Détail et bilan de chaque phase : [docs/roadmap.md](docs/roadmap.md).
 
@@ -413,7 +417,7 @@ Indicateurs calculés à la volée en SQL agrégé : **14,47 ms** sur 10 000 can
 | US-42 | Score de matching calculé par le backend (exemple chiffré : 81), décomposition, compétences manquantes, explication rédigée par le modèle | [US-42](docs/stories/US-42.md) |
 | US-43 | Garde-fous : pseudonymisation testée sur 10 CV, CV piégé sans effet, aucun statut modifié, audit | [US-43](docs/stories/US-43.md) |
 
-**Banc d'essai du modèle** : jeu de CV, attentes et script prêts dans `backend/scripts/ai-benchmark/` ; à exécuter sur un poste avec Ollama, puis épingler le modèle ([docs/ai-model-benchmark.md](docs/ai-model-benchmark.md)). Modèle provisoire : `qwen3.5:9b`.
+**Banc d'essai du modèle** : exécuté le 4 novembre 2026 sur GitHub Actions ; modèle retenu `qwen3.5:4b` sans raisonnement, image `ollama/ollama:0.40.14` ([docs/ai-model-benchmark.md](docs/ai-model-benchmark.md)).
 
 ### Phase 7 — Entretiens et notes
 

@@ -56,7 +56,8 @@ class AiConfig {
     @ConditionalOnExpression("${smartrecruit.ai.enabled:false} and '${smartrecruit.ai.provider:ollama}' == 'ollama'")
     AIService ollamaAIService(RestClient ollamaRestClient, AiProperties properties, PromptLibrary prompts,
                               JsonMapper json, Validator validator) {
-        return new OllamaAIService(ollamaRestClient, properties.ollama().model(), prompts, json, validator);
+        return new OllamaAIService(ollamaRestClient, properties.ollama().model(), properties.ollama().think(),
+                prompts, json, validator);
     }
 
     @Bean

@@ -24,11 +24,11 @@ Il complète le [README](../README.md), qui présente le projet, et la [roadmap]
 | Phases 1 à 12 (58 stories) | Livrées, « En revue » : à relire puis passer à « Terminé » |
 | Dépôt | Public : https://github.com/BOUSSOUF-Hajar/smart-recruit |
 | CI (GitHub Actions) | Entièrement verte sur `main` le 3 novembre 2026 (6 jobs) : **jalon J4 atteint** |
-| Backend sur le poste | `./mvnw verify` et SpotBugs verts le 3 novembre 2026 (325 tests unitaires, 225 d'intégration) |
+| Backend sur le poste | `./mvnw verify` et SpotBugs verts le 4 novembre 2026 (326 tests unitaires, 225 d'intégration) |
 | Frontend sur le poste | Lint, formatage, 160 tests Vitest et build verts le 3 novembre 2026 (Node 24.22.2) |
 | Captures d'écran | Faites (`docs/screenshots/`, README) ; à refaire avec `npm run screenshots` si l'interface change |
 | Pile Docker complète sur le poste | Pas encore lancée : images à télécharger ; la CI la lance à chaque push |
-| Banc d'essai de l'IA | Pas exécuté : modèle `qwen3.5:9b` provisoire, image Ollama sur `latest` |
+| Banc d'essai de l'IA | Exécuté le 4 novembre 2026 sur GitHub Actions : `qwen3.5:4b` sans raisonnement, image `ollama/ollama:0.40.14` |
 
 ## 2. Préparer le poste
 
@@ -82,7 +82,7 @@ Les valeurs sont fictives et suffisent en local. `.env` est ignoré par Git : ne
 Il manque encore, pour `docker compose up --build` :
 - `eclipse-temurin:25-jre-alpine` et `maven` (image backend) ;
 - `node` et `nginxinc/nginx-unprivileged:1.29-alpine` (image frontend) ;
-- `ollama/ollama` et le modèle (environ 6,6 Go) pour l'IA, facultatifs.
+- `ollama/ollama:0.40.14` et le modèle `qwen3.5:4b` (environ 3,3 Go) pour l'IA, facultatifs.
 
 ## 3. Lancer l'application
 
@@ -202,18 +202,18 @@ Pour ajouter un écran : une ligne `capture(page, 'nom')` dans `readme.screens.t
 
 Après la relecture complète du dépôt (section 6.1), noter le jalon J5 dans la roadmap (§7 et phase 12), le README et `CLAUDE.md` §7.
 
-### 6.4 Banc d'essai de l'IA
+### 6.4 Banc d'essai de l'IA (fait, à relancer si besoin)
 
-Le protocole complet est dans [ai-model-benchmark.md](ai-model-benchmark.md) §2. Il demande environ 10 Go de téléchargements et 16 Go de RAM recommandés, ce qui dépasse le poste actuel (7,8 Go alloués à Docker) : une autre machine ou une meilleure connexion sera nécessaire.
+Fait le 4 novembre 2026 : résultats et décision dans [ai-model-benchmark.md](ai-model-benchmark.md). Le poste n'a pas servi : sa connexion (environ 3 Ko/s vers GitHub et Docker Hub) ne permettait pas de télécharger Ollama ni les modèles.
 
-1. `docker compose -f docker-compose.dev.yml up -d ollama`.
-2. Télécharger les modèles candidats (`ollama pull qwen3.5:9b`, etc.).
-3. `python3 backend/scripts/ai-benchmark/run_benchmark.py qwen3.5:9b llama3.1:8b mistral:7b gemma3:12b`.
-4. Reporter le tableau dans le §4 du document et écrire la décision.
-5. Épingler :
-   - le modèle : `AI_MODEL` dans `.env.example` et la valeur par défaut dans `application.yml` ;
-   - l'image Ollama : remplacer `latest` par la version mesurée dans `docker-compose.yml` (`OLLAMA_VERSION`) et `docker-compose.dev.yml`.
-6. Mettre à jour la roadmap §10, le README (rubrique IA, état du projet) et `CLAUDE.md` §7.
+Pour mesurer un autre modèle (nouvelle version de qwen, autre famille) :
+
+1. Sur GitHub : onglet **Actions** → **Banc d'essai IA** → **Run workflow**.
+2. Champ « models » : par exemple `qwen3.5:4b@non phi4-mini` (`@non` coupe le raisonnement).
+3. Lire le résultat dans le résumé de chaque job (tableau, processeur, temps par CV).
+4. Si un modèle fait mieux : mettre à jour le §4 du document, puis `AI_MODEL` (`.env.example`, `application.yml`, `AiProperties`, `docker-compose.yml`) et la roadmap.
+
+À essayer sur le poste avant une démonstration : l'IA de bout en bout avec `qwen3.5:4b`. Le portable à 2 cœurs sera plus lent que le runner ; si une analyse échoue après 180 s, passer à `AI_MODEL=qwen3.5:2b` (environ deux fois plus rapide, mesuré aussi) ou désactiver l'IA (`AI_ENABLED=false`).
 
 ### 6.5 Recommandé : protéger `main`
 

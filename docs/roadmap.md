@@ -235,7 +235,7 @@ Les entretiens ferment le workflow, l'IA apporte l'aide à la décision, et les 
 
 **Critère de fin** : critères de US-40 à US-43 verts ; modèle choisi et épinglé, banc d'essai documenté.
 
-**Bilan (en revue)** : critères verts (320 tests unitaires et 178 d'intégration côté backend, 140 côté frontend), avec une fausse IA en test et un faux serveur Ollama pour l'adaptateur. **Reste à faire sur un poste équipé** : exécuter le banc d'essai (jeu de 10 CV, attentes et script prêts) puis confirmer ou remplacer le modèle provisoire `qwen3.5:9b` — l'environnement de développement de ce dépôt n'a ni GPU ni accès au registre de modèles.
+**Bilan (en revue)** : critères verts (320 tests unitaires et 178 d'intégration côté backend, 140 côté frontend), avec une fausse IA en test et un faux serveur Ollama pour l'adaptateur. **Banc d'essai exécuté le 4 novembre 2026**, sur GitHub Actions faute de connexion suffisante sur le poste : `qwen3.5:4b` sans raisonnement remplace le modèle provisoire `qwen3.5:9b` (précision 0,98, rappel 0,93, 94 s par CV sur 4 vCPU sans GPU), image `ollama/ollama:0.40.14` épinglée ([résultats](ai-model-benchmark.md)). Le banc a aussi changé deux réglages : raisonnement coupé (`think: false`) et délai de lecture porté à 180 s.
 
 ### Phase 9 — Tableaux de bord · 8 points
 
@@ -249,7 +249,7 @@ Les entretiens ferment le workflow, l'IA apporte l'aide à la décision, et les 
 
 **Critère de fin** : critères de US-44 et US-45 verts ; indicateurs en moins d'une seconde. **Jalon J3** : MVP conforme à la section 31 de ton prompt.
 
-**Bilan (en revue)** : critères verts ; indicateurs recruteur calculés en 14,47 ms (somme des médianes) sur 10 000 candidatures, soit bien sous la seconde, sans table de statistiques. Le module `reporting` lit les tables des autres modules en SQL, en lecture seule (exception documentée, comme US-30). **Jalon J3 atteint** : workflow complet, entretiens, IA et tableaux de bord — le MVP est démontrable de bout en bout. Seule réserve héritée de la phase 8 : le banc d'essai IA reste à exécuter sur un poste équipé.
+**Bilan (en revue)** : critères verts ; indicateurs recruteur calculés en 14,47 ms (somme des médianes) sur 10 000 candidatures, soit bien sous la seconde, sans table de statistiques. Le module `reporting` lit les tables des autres modules en SQL, en lecture seule (exception documentée, comme US-30). **Jalon J3 atteint** : workflow complet, entretiens, IA et tableaux de bord — le MVP est démontrable de bout en bout. La réserve héritée de la phase 8 est levée le 4 novembre 2026 : banc d'essai IA exécuté, modèle épinglé.
 
 ## 6. Phases 10 à 12 — Livrer
 
@@ -373,7 +373,7 @@ Le risque principal n'est pas technique : c'est de vouloir tout faire et de ne r
 | Vélocité plus faible que prévu | Phase 3 nettement plus longue que 75 h | Recalibrer, puis activer les leviers ci-dessous dans l'ordre |
 | Blocage sur un sujet nouveau (Spring Security, signals, Testcontainers) | Plus d'une journée sur la même erreur | Isoler le problème dans un petit projet d'essai ; me décrire l'erreur exacte et ce qui a été tenté |
 | Dérive du périmètre | Envie d'ajouter une fonctionnalité V2 en cours de route | La noter dans la liste WON'T ; ne la commencer qu'après J4 |
-| LLM local trop lent sur ta machine | Banc d'essai au-delà de 120 s par CV | Modèle plus petit ; à défaut, IA désactivée en démo et vidéo enregistrée sur une machine plus puissante |
+| LLM local trop lent sur ta machine | Banc d'essai au-delà de 120 s par CV | Modèle plus petit ; à défaut, IA désactivée en démo et vidéo enregistrée sur une machine plus puissante. Survenu (4 novembre 2026) : `qwen3.5:9b` au-delà de 120 s, remplacé par `qwen3.5:4b` ; repli mesuré `qwen3.5:2b` pour un poste à 2 cœurs |
 | Montée de version d'une dépendance qui casse le build | CI rouge sans changement de ton code | Épingler les versions ; Dependabot avec mises à jour groupées et revues |
 
 ### Leviers pour réduire le périmètre, dans l'ordre
@@ -395,7 +395,7 @@ Quelques décisions et mises à jour ont été repoussées volontairement au mom
 | --- | --- | --- |
 | Vérifier qu'une version de springdoc compatible avec Spring Boot 4.1 est publiée, sinon démarrer en 4.0.x | Architecture Spring Boot §0 | Phase 2, première tâche |
 | Ajouter `INVALID_CURRENT_PASSWORD`, `INVALID_STATE` et `JOB_NOT_PUBLISHABLE` au catalogue d'erreurs | API REST §12 | Phase 2, à l'export de `docs/` |
-| Choisir et épingler le modèle Ollama | Architecture §6 | Phase 8, banc d'essai |
+| Choisir et épingler le modèle Ollama | Architecture §6 | Phase 8, banc d'essai ; fait le 4 novembre 2026 (`qwen3.5:4b`, Ollama 0.40.14) |
 | Fixer la date de chaque jalon | Cette roadmap §0 | Fin de phase 3, après mesure de la vélocité |
 | Essayer les Signal Forms sur un formulaire isolé | Architecture Angular §0 | Facultatif, après J4 |
 

@@ -13,7 +13,7 @@ Une fiche courte par décision structurante : contexte, décision, alternatives 
 | [007](007-workflow-dans-application-status.md) | Workflow de candidature porté par l'énumération `ApplicationStatus` | Acceptée |
 | [008](008-score-par-formule.md) | Score de matching calculé par formule, LLM pour l'extraction et l'explication | Acceptée |
 | [009](009-ia-asynchrone-par-table-de-taches.md) | Traitement IA asynchrone par table de tâches | Acceptée |
-| [010](010-ollama-restclient-aiservice.md) | Ollama appelé par `RestClient` derrière `AIService` ; modèle choisi par test comparatif | Acceptée, modèle provisoire |
+| [010](010-ollama-restclient-aiservice.md) | Ollama appelé par `RestClient` derrière `AIService` ; modèle choisi par test comparatif | Acceptée, modèle `qwen3.5:4b` épinglé |
 | [011](011-enumerations-en-texte-avec-check.md) | Énumérations stockées en texte avec contrainte CHECK | Acceptée |
 | [012](012-diagrammes-en-mermaid.md) | Diagrammes en Mermaid versionnés avec le code | Acceptée |
 

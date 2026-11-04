@@ -62,7 +62,7 @@ class AiStatusAdapterTest {
     private AiStatusAdapter adapter(boolean enabled, Map<String, Object> beans) {
         AiProperties properties = new AiProperties(enabled, "ollama", 12000, 10,
                 new AiProperties.Ollama(URI.create("http://127.0.0.1:1"), "qwen-test", Duration.ofSeconds(1),
-                        Duration.ofSeconds(1)),
+                        Duration.ofSeconds(1), false),
                 new AiProperties.Executor(1, 1));
         AIService service = new DisabledAIService() {
             @Override
