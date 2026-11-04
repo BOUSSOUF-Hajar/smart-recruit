@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
     inputs:
       models:
-        description: 'Modèles séparés par des espaces'
-        default: 'qwen3.5:4b qwen3.5:9b llama3.2:3b'
+        description: 'Mesures séparées par des espaces : modèle, ou modèle@non pour couper le raisonnement'
+        default: 'qwen3.5:4b@non qwen3.5:2b@non gemma3:4b llama3.2:3b'
   push:
     branches-ignore: [main]
     paths:
@@ -35,19 +35,16 @@ jobs:
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
     steps:
-      # Chaque modèle est mesuré tel que l'application l'appelle (raisonnement laissé au choix du modèle),
-      # et les modèles qwen3.5, qui raisonnent avant de répondre, aussi raisonnement coupé (think=false).
+      # « modèle » : appelé comme dans l'application (raisonnement au choix du modèle) ;
+      # « modèle@non » : raisonnement coupé (think=false), pour les modèles qui raisonnent (qwen3.5).
+      # Première série (4 novembre 2026) : qwen3.5:4b qwen3.5:4b@non qwen3.5:9b qwen3.5:9b@non llama3.2:3b
       - id: plan
         env:
-          MODELS: ${{ inputs.models || 'qwen3.5:4b qwen3.5:9b llama3.2:3b' }}
+          MODELS: ${{ inputs.models || 'qwen3.5:4b@non qwen3.5:2b@non gemma3:4b llama3.2:3b' }}
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os
-          runs = []
-          for model in os.environ["MODELS"].split():
-              runs.append({"model": model, "think": ""})
-              if model.startswith("qwen3"):
-                  runs.append({"model": model, "think": "non"})
+          runs = [dict(zip(("model", "think"), (m.split("@") + [""])[:2])) for m in os.environ["MODELS"].split()]
           print("matrix=" + json.dumps({"include": runs}))
           EOF
 

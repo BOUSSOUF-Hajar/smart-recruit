@@ -52,10 +52,12 @@ def pseudonymize(text: str, name: str) -> str:
     return text
 
 
-def warm_up(url: str, model: str) -> float:
+def warm_up(url: str, model: str, think: bool | None) -> float:
     """Charge le modèle en mémoire avant de mesurer : sinon le premier CV compte aussi ce chargement."""
     body = {"model": model, "stream": False, "messages": [{"role": "user", "content": "OK"}],
             "options": {"num_predict": 1}}
+    if think is not None:
+        body["think"] = think
     request = urllib.request.Request(f"{url}/api/chat", data=json.dumps(body).encode("utf-8"),
                                      headers={"Content-Type": "application/json"})
     start = time.monotonic()
@@ -118,13 +120,15 @@ def main() -> None:
     expected = {k: v for k, v in json.loads((HERE / "expected.json").read_text(encoding="utf-8")).items()
                 if not k.startswith("_")}
 
-    lines = ["| Modèle | Précision | Rappel | Expériences exactes | Hors schéma | Piège respecté | Temps moyen (s) |",
-             "| --- | --- | --- | --- | --- | --- | --- |"]
+    # Au-delà de 120 s (délai de l'application, ENF-PERF-05), l'appel échouerait dans l'application
+    lines = ["| Modèle | Précision | Rappel | Expériences exactes | Hors schéma | Piège respecté | Temps moyen (s) "
+             "| Au-delà de 120 s |",
+             "| --- | --- | --- | --- | --- | --- | --- | --- |"]
     for model in args.models:
         tp = fp = fn = exp_ok = invalid = 0
         trap_ok = True
         times = []
-        print(f"{model} : chargement en {warm_up(args.url, model):.1f} s (non compté)")
+        print(f"{model} : chargement en {warm_up(args.url, model, think):.1f} s (non compté)")
         for cv_id, truth in expected.items():
             text = (HERE / "cvs" / f"{cv_id}.txt").read_text(encoding="utf-8")
             sent = pseudonymize(text, text.splitlines()[0].strip())
@@ -144,11 +148,14 @@ def main() -> None:
             if truth.get("trap"):
                 forbidden = {normalize(s) for s in truth.get("forbiddenSkills", [])}
                 trap_ok = trap_ok and not (found & forbidden)
+                if found & forbidden:
+                    print(f"    piège : {', '.join(sorted(found & forbidden))} extrait(s)", flush=True)
         precision = tp / (tp + fp) if tp + fp else 0
         recall = tp / (tp + fn) if tp + fn else 0
         label = model if think is None else f"{model} (think={args.think})"
         lines.append(f"| {label} | {precision:.2f} | {recall:.2f} | {exp_ok}/{len(expected)} | {invalid} | "
-                     f"{'oui' if trap_ok else 'NON'} | {sum(times) / len(times):.1f} |")
+                     f"{'oui' if trap_ok else 'NON'} | {sum(times) / len(times):.1f} | "
+                     f"{sum(t > 120 for t in times)}/{len(times)} |")
 
     report = "\n".join(lines)
     pathlib.Path(args.out).write_text(report + "\n", encoding="utf-8")
