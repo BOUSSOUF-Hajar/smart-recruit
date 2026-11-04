@@ -12,7 +12,9 @@ Bibliothèque standard Python 3.10+ uniquement.
 
 Usage :
     ollama pull qwen3.5:9b && ollama pull llama3.1:8b
-    python3 run_benchmark.py qwen3.5:9b llama3.1:8b [--url http://localhost:11434] [--out results.md]
+    python3 run_benchmark.py qwen3.5:9b llama3.1:8b [--url http://localhost:11434] [--out results.md] [--think non]
+
+Sur GitHub Actions : workflow « Banc d'essai IA » (.github/workflows/ai-benchmark.yml).
 """
 import argparse
 import json
@@ -50,7 +52,30 @@ def pseudonymize(text: str, name: str) -> str:
     return text
 
 
-def extract(url: str, model: str, cv_text: str) -> tuple[dict | None, float, str]:
+def warm_up(url: str, model: str) -> float:
+    """Charge le modèle en mémoire avant de mesurer : sinon le premier CV compte aussi ce chargement."""
+    body = {"model": model, "stream": False, "messages": [{"role": "user", "content": "OK"}],
+            "options": {"num_predict": 1}}
+    request = urllib.request.Request(f"{url}/api/chat", data=json.dumps(body).encode("utf-8"),
+                                     headers={"Content-Type": "application/json"})
+    start = time.monotonic()
+    with urllib.request.urlopen(request, timeout=600) as response:
+        response.read()
+    return time.monotonic() - start
+
+
+def speed(payload: dict) -> str:
+    """Débits mesurés par Ollama : lecture du prompt et génération, en tokens par seconde."""
+    def rate(count: str, duration: str) -> str:
+        n, ns = payload.get(count, 0), payload.get(duration, 0)
+        return f"{n} tokens à {n / (ns / 1e9):.1f}/s" if ns else "?"
+    thinking = len(payload.get("message", {}).get("thinking") or "")
+    return (f"prompt {rate('prompt_eval_count', 'prompt_eval_duration')}, "
+            f"réponse {rate('eval_count', 'eval_duration')}"
+            + (f", raisonnement de {thinking} caractères" if thinking else ""))
+
+
+def extract(url: str, model: str, cv_text: str, think: bool | None) -> tuple[dict | None, float, str]:
     body = {
         "model": model,
         "stream": False,
@@ -61,6 +86,8 @@ def extract(url: str, model: str, cv_text: str) -> tuple[dict | None, float, str
             {"role": "user", "content": f"<cv>\n{cv_text}\n</cv>"},
         ],
     }
+    if think is not None:  # absent par défaut, comme dans l'application
+        body["think"] = think
     request = urllib.request.Request(f"{url}/api/chat", data=json.dumps(body).encode("utf-8"),
                                      headers={"Content-Type": "application/json"})
     start = time.monotonic()
@@ -68,6 +95,7 @@ def extract(url: str, model: str, cv_text: str) -> tuple[dict | None, float, str
         with urllib.request.urlopen(request, timeout=300) as response:
             payload = json.loads(response.read().decode("utf-8"))
         elapsed = time.monotonic() - start
+        print(f"    {speed(payload)}")
         content = payload["message"]["content"]
         result = json.loads(content)
         required = {"skills", "experiences", "educations", "languages", "summary"}
@@ -83,7 +111,10 @@ def main() -> None:
     parser.add_argument("models", nargs="+")
     parser.add_argument("--url", default="http://localhost:11434")
     parser.add_argument("--out", default=str(HERE / "results.md"))
+    parser.add_argument("--think", choices=["oui", "non"],
+                        help="force ou coupe le raisonnement des modèles qui en ont un (absent : choix du modèle)")
     args = parser.parse_args()
+    think = None if args.think is None else args.think == "oui"
     expected = {k: v for k, v in json.loads((HERE / "expected.json").read_text(encoding="utf-8")).items()
                 if not k.startswith("_")}
 
@@ -93,12 +124,13 @@ def main() -> None:
         tp = fp = fn = exp_ok = invalid = 0
         trap_ok = True
         times = []
+        print(f"{model} : chargement en {warm_up(args.url, model):.1f} s (non compté)")
         for cv_id, truth in expected.items():
             text = (HERE / "cvs" / f"{cv_id}.txt").read_text(encoding="utf-8")
             sent = pseudonymize(text, text.splitlines()[0].strip())
-            result, elapsed, error = extract(args.url, model, sent)
+            result, elapsed, error = extract(args.url, model, sent, think)
             times.append(elapsed)
-            print(f"{model} {cv_id} : {error or 'ok'} ({elapsed:.1f} s)")
+            print(f"{model} {cv_id} : {error or 'ok'} ({elapsed:.1f} s)", flush=True)
             if result is None:
                 invalid += 1
                 fn += len(truth["skills"])
@@ -114,7 +146,8 @@ def main() -> None:
                 trap_ok = trap_ok and not (found & forbidden)
         precision = tp / (tp + fp) if tp + fp else 0
         recall = tp / (tp + fn) if tp + fn else 0
-        lines.append(f"| {model} | {precision:.2f} | {recall:.2f} | {exp_ok}/{len(expected)} | {invalid} | "
+        label = model if think is None else f"{model} (think={args.think})"
+        lines.append(f"| {label} | {precision:.2f} | {recall:.2f} | {exp_ok}/{len(expected)} | {invalid} | "
                      f"{'oui' if trap_ok else 'NON'} | {sum(times) / len(times):.1f} |")
 
     report = "\n".join(lines)
